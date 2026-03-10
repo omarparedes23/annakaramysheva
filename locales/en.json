@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home":        "Home",
+    "collections": "Collections",
+    "products":    "Products",
+    "gallery":     "Gallery",
+    "contact":     "Contact"
+  },
+
+  "footer": {
+    "navigation": "Navigation",
+    "contact":    "Contact"
+  },
+
+  "home": {
+    "hero_label":          "Anna Karamysheva — dress & design",
+    "hero_tagline":        "Loved. Happy. Special.",
+    "hero_cta":            "Explore collections",
+    "about_label":         "About the brand",
+    "about_heading":       "Design born from a love of beauty",
+    "about_text":          "Every Anna Karamysheva piece is crafted with exceptional attention to detail, fabric choice, and silhouette. Minimalism that speaks volumes.",
+    "featured_heading":    "Featured pieces",
+    "view_all":            "View all",
+    "philosophy_label":    "Philosophy",
+    "philosophy_heading":  "Clothing that becomes a part of you",
+    "philosophy_text":     "Inspired by the restraint of Toteme, the sensuality of Jacquemus, and the quiet perfection of The Row — Anna Karamysheva pieces are made for the woman who knows her worth.",
+    "contact_cta":         "Get in touch",
+    "inquiry_label":       "Orders & inquiries",
+    "inquiry_heading":     "Let's find the right piece for you",
+    "inquiry_cta":         "Contact us",
+    "quote_1":             "Every woman is special — her clothing should reflect that.",
+    "quote_2":             "Fabric quality and precision of cut are not luxury — they are respect."
+  },
+
+  "gallery": {
+    "label":   "Collections & pieces",
+    "heading": "Gallery",
+    "all":     "All",
+    "empty":   "No pieces found"
+  },
+
+  "collection": {
+    "label": "Collection"
+  },
+
+  "product": {
+    "sold_out":             "Sold out",
+    "available":            "Available",
+    "consult_availability": "Consult availability",
+    "ask_question":         "Ask a question",
+    "you_may_like":         "You may also like",
+    "details_label":        "About this piece",
+    "details_text":         "Handmade. Natural materials. Made in Voronezh, Russia.",
+    "care_label":           "Care",
+    "care_text":            "Gentle wash at 30°C or dry clean only. Do not wring.",
+    "shipping_label":       "Shipping",
+    "shipping_text":        "Worldwide shipping available. Made-to-order lead time: 2–4 weeks."
+  },
+
+  "contact": {
+    "label":            "Get in touch",
+    "heading":          "Contact us",
+    "subheading":       "Want to enquire about a piece, place a bespoke order, or simply ask a question? We respond within 24 hours.",
+    "form_heading":     "Send a message",
+    "field_name":       "Your name",
+    "field_email":      "Email",
+    "field_message":    "Message",
+    "placeholder_name":    "Name",
+    "placeholder_email": "email{'@'}example.com",    
+    "placeholder_message": "Tell us about your enquiry...",
+    "submit":           "Send message",
+    "success_heading":  "Thank you",
+    "success_text":     "Your message has been received. We will be in touch shortly.",
+    "error_generic":    "Something went wrong. Please try again.",
+    "info_designer":    "Designer",
+    "info_location":    "Location",
+    "info_email":       "Email"
+  },
+
+  "seo": {
+    "home_description":       "Anna Karamysheva — luxury fashion designer from Voronezh, Russia. Loved. Happy. Special.",
+    "gallery_description":    "Gallery of Anna Karamysheva pieces — handcrafted womenswear in the luxury minimalism tradition.",
+    "contact_description":    "Contact Anna Karamysheva for a consultation or bespoke order."
+  },
+
+  "errors": {
+    "product_not_found":    "Product not found",
+    "collection_not_found": "Collection not found"
+  }
+}

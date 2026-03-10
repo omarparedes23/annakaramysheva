@@ -1,0 +1,235 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base ────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    --color-bone:  #F5F0EB;
+    --color-white: #FFFFFF;
+    --color-jet:   #0A0A0A;
+    --font-serif:  'Cormorant Garamond', Georgia, serif;
+    --font-sans:   'Inter', system-ui, sans-serif;
+  }
+
+  html {
+    @apply scroll-smooth;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'onum' 1;
+  }
+
+  body {
+    @apply bg-white text-jet-900 font-sans antialiased;
+    font-weight: 300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-light;
+  }
+
+  /* Consistent image rendering */
+  img {
+    @apply max-w-full;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* Remove autofill styling */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px white inset;
+    -webkit-text-fill-color: #0A0A0A;
+  }
+
+  /* Focus visible for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-1 ring-jet-900 ring-offset-2;
+  }
+}
+
+/* ─── Components ─────────────────────────────────────────── */
+@layer components {
+
+  /* Typography */
+  .display-xl  { @apply font-serif font-light text-display-xl; }
+  .display-lg  { @apply font-serif font-light text-display-lg; }
+  .display-md  { @apply font-serif font-light text-display-md; }
+  .caption     { @apply font-sans text-xs tracking-widest uppercase font-light; }
+  .label       { @apply font-sans text-2xs tracking-superwide uppercase font-light text-jet-500; }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center
+           px-8 py-3
+           bg-jet-900 text-white
+           font-sans text-xs tracking-widest uppercase
+           transition-all duration-400
+           hover:bg-jet-700
+           focus-visible:ring-offset-0;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center
+           px-8 py-3
+           border border-jet-900 text-jet-900
+           font-sans text-xs tracking-widest uppercase
+           transition-all duration-400
+           hover:bg-jet-900 hover:text-white;
+  }
+
+  .btn-ghost-bone {
+    @apply inline-flex items-center justify-center
+           px-8 py-3
+           border border-bone-300 text-bone-200
+           font-sans text-xs tracking-widest uppercase
+           transition-all duration-400
+           hover:bg-white hover:border-white hover:text-jet-900;
+  }
+
+  /* Forms */
+  .form-input {
+    @apply w-full border-0 border-b border-jet-200 bg-transparent
+           py-3 px-0 font-sans text-sm font-light text-jet-900
+           placeholder:text-jet-400
+           focus:outline-none focus:border-jet-900
+           transition-colors duration-300;
+  }
+
+  .form-label {
+    @apply block font-sans text-2xs tracking-superwide uppercase text-jet-500 mb-2;
+  }
+
+  .form-select {
+    @apply w-full border-0 border-b border-jet-200 bg-transparent
+           py-3 px-0 font-sans text-sm font-light text-jet-900
+           focus:outline-none focus:border-jet-900
+           appearance-none cursor-pointer
+           transition-colors duration-300;
+  }
+
+  /* Admin form fields */
+  .admin-input {
+    @apply block w-full rounded-none border border-bone-300
+           bg-white px-4 py-3
+           font-sans text-sm font-light text-jet-900
+           placeholder:text-jet-400
+           focus:outline-none focus:border-jet-700 focus:ring-0
+           transition-colors duration-200;
+  }
+
+  .admin-label {
+    @apply block font-sans text-xs tracking-widest uppercase text-jet-500 mb-2;
+  }
+
+  .admin-select {
+    @apply block w-full rounded-none border border-bone-300
+           bg-white px-4 py-3
+           font-sans text-sm font-light text-jet-900
+           focus:outline-none focus:border-jet-700 focus:ring-0
+           appearance-none cursor-pointer
+           transition-colors duration-200;
+  }
+
+  /* Cards */
+  .product-card {
+    @apply cursor-pointer;
+  }
+
+
+  .product-card-image {
+    @apply aspect-3/4 overflow-hidden bg-bone-100 relative;
+  }
+
+  .product-card-image img {
+    @apply w-full h-full object-cover transition-transform duration-800 group-hover:scale-105;
+  }
+
+  /* Dividers */
+  .divider {
+    @apply border-t border-bone-200;
+  }
+
+  .divider-dark {
+    @apply border-t border-jet-900;
+  }
+
+  /* Section spacing */
+  .section {
+    @apply py-24 md:py-32 lg:py-40;
+  }
+
+  .section-sm {
+    @apply py-16 md:py-24;
+  }
+
+  /* Container */
+  .container-editorial {
+    @apply max-w-8xl mx-auto px-6 md:px-12 lg:px-16;
+  }
+
+  /* Nav link */
+  .nav-link {
+    @apply font-sans text-xs tracking-widest uppercase text-jet-900
+           relative pb-px
+           after:absolute after:bottom-0 after:left-0
+           after:w-0 after:h-px after:bg-jet-900
+           after:transition-all after:duration-300
+           hover:after:w-full;
+  }
+
+  /* Admin sidebar link */
+  .admin-nav-link {
+    @apply flex items-center gap-3 px-4 py-3
+           font-sans text-xs tracking-widest uppercase
+           text-jet-500 hover:text-jet-900
+           transition-colors duration-200;
+  }
+
+  .admin-nav-link.active {
+    @apply text-jet-900 bg-bone-100;
+  }
+
+  /* Status badges */
+  .badge-published {
+    @apply inline-flex items-center px-2.5 py-0.5
+           text-2xs tracking-widest uppercase
+           bg-jet-900 text-white;
+  }
+
+  .badge-draft {
+    @apply inline-flex items-center px-2.5 py-0.5
+           text-2xs tracking-widest uppercase
+           bg-bone-200 text-jet-600;
+  }
+
+  .badge-sold-out {
+    @apply inline-flex items-center px-2.5 py-0.5
+           text-2xs tracking-widest uppercase
+           border border-jet-300 text-jet-400;
+  }
+}
+
+/* ─── Utilities ──────────────────────────────────────────── */
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  .image-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-jet-900/40 to-transparent;
+  }
+
+  /* Animate on scroll — set initial state */
+  .aos-fade {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+
+  .aos-fade.aos-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Hide scrollbar but allow scroll */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}

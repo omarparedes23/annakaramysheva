@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home":        "Главная",
+    "collections": "Коллекции",
+    "products":    "Изделия",
+    "gallery":     "Галерея",
+    "contact":     "Контакт"
+  },
+
+  "footer": {
+    "navigation": "Навигация",
+    "contact":    "Связь"
+  },
+
+  "home": {
+    "hero_label":          "Anna Karamysheva — dress & design",
+    "hero_tagline":        "Любимая. Счастливая. Особенная.",
+    "hero_cta":            "Смотреть коллекции",
+    "about_label":         "О бренде",
+    "about_heading":       "Дизайн, рождённый из любви к красоте",
+    "about_text":          "Каждое изделие Anna Karamysheva создаётся с особым вниманием к деталям, выбору тканей и форме. Минимализм, который говорит без лишних слов.",
+    "featured_heading":    "Избранные изделия",
+    "view_all":            "Смотреть все",
+    "philosophy_label":    "Философия",
+    "philosophy_heading":  "Одежда, которая становится частью тебя",
+    "philosophy_text":     "Вдохновлённые лаконичностью Toteme, чувственностью Jacquemus и безупречностью The Row — изделия Anna Karamysheva создаются для женщины, знающей свою ценность.",
+    "contact_cta":         "Написать нам",
+    "inquiry_label":       "Заказ и консультация",
+    "inquiry_heading":     "Найдём изделие для вас",
+    "inquiry_cta":         "Связаться с нами",
+    "quote_1":             "Каждая женщина особенная — одежда должна это подчёркивать.",
+    "quote_2":             "Качество ткани и точность кроя — это не роскошь, это уважение."
+  },
+
+  "gallery": {
+    "label":   "Коллекции и изделия",
+    "heading": "Галерея",
+    "all":     "Все",
+    "empty":   "Изделия не найдены"
+  },
+
+  "collection": {
+    "label": "Коллекция"
+  },
+
+  "product": {
+    "sold_out":             "Продано",
+    "available":            "В наличии",
+    "consult_availability": "Узнать о наличии",
+    "ask_question":         "Задать вопрос",
+    "you_may_like":         "Вам также может понравиться",
+    "details_label":        "О изделии",
+    "details_text":         "Ручная работа. Натуральные материалы. Изготовлено в Воронеже.",
+    "care_label":           "Уход",
+    "care_text":            "Деликатная стирка при 30°C или сухая чистка. Не отжимать.",
+    "shipping_label":       "Доставка",
+    "shipping_text":        "Доставка по всей России и за рубеж. Срок изготовления на заказ — от 2 до 4 недель."
+  },
+
+  "contact": {
+    "label":            "Свяжитесь с нами",
+    "heading":          "Напишите нам",
+    "subheading":       "Хотите узнать об изделии, сделать индивидуальный заказ или задать вопрос? Мы ответим в течение 24 часов.",
+    "form_heading":     "Форма обратной связи",
+    "field_name":       "Ваше имя",
+    "field_email":      "Email",
+    "field_message":    "Сообщение",
+    "placeholder_name":    "Имя",
+    "placeholder_email":   "email{'@'}example.com",    
+    "placeholder_message": "Расскажите нам...",
+    "submit":           "Отправить",
+    "success_heading":  "Спасибо!",
+    "success_text":     "Ваше сообщение получено. Мы ответим в ближайшее время.",
+    "error_generic":    "Произошла ошибка. Попробуйте ещё раз.",
+    "info_designer":    "Дизайнер",
+    "info_location":    "Город",
+    "info_email":       "Email"
+  },
+
+  "seo": {
+    "home_description":       "Anna Karamysheva — дизайнер женской одежды из Воронежа. Любимая. Счастливая. Особенная.",
+    "gallery_description":    "Галерея изделий Anna Karamysheva — женская одежда ручной работы в стиле luxury минимализма.",
+    "contact_description":    "Свяжитесь с Anna Karamysheva для консультации или индивидуального заказа."
+  },
+
+  "errors": {
+    "product_not_found":    "Изделие не найдено",
+    "collection_not_found": "Коллекция не найдена"
+  }
+}
