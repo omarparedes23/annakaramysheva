@@ -101,7 +101,7 @@ anna-karamysheva/
 ├── pages/
 │   ├── index.vue                 # Home: hero, productos destacados, editorial
 │   ├── gallery.vue               # Galería filtrable por colección
-│   ├── contact.vue               # Formulario de contacto → tabla inquiries
+│   ├── contact.vue               # Formulario de contacto → tabla ak_inquiries
 │   ├── products/
 │   │   └── [slug].vue            # Detalle de producto con galería + lightbox
 │   ├── collections/
@@ -142,7 +142,7 @@ anna-karamysheva/
 
 ### Tablas
 
-#### `collections`
+#### `ak_collections`
 Agrupa productos por colección temática o temporal.
 
 | Columna | Tipo | Descripción |
@@ -154,7 +154,7 @@ Agrupa productos por colección temática o temporal.
 | `year` | INT | Año de la colección |
 | `created_at` | TIMESTAMP | Automático |
 
-#### `products`
+#### `ak_products`
 Cada pieza de vestimenta individual.
 
 | Columna | Tipo | Descripción |
@@ -166,20 +166,20 @@ Cada pieza de vestimenta individual.
 | `price` | DECIMAL(10,2) | Precio en rublos |
 | `status` | TEXT | `draft` / `published` / `sold_out` |
 | `external_link` | TEXT | URL para botón "Consultar disponibilidad" (WhatsApp, Telegram, etc.) |
-| `collection_id` | UUID FK | Referencia a `collections.id` |
+| `collection_id` | UUID FK | Referencia a `ak_collections.id` |
 | `created_at` | TIMESTAMP | Automático |
 
-#### `product_images`
+#### `ak_product_images`
 Imágenes asociadas a un producto, ordenadas por posición.
 
 | Columna | Tipo | Descripción |
 |---|---|---|
 | `id` | UUID PK | — |
-| `product_id` | UUID FK | Cascade delete desde `products` |
+| `product_id` | UUID FK | Cascade delete desde `ak_products` |
 | `image_url` | TEXT | URL pública de Supabase Storage |
 | `position` | INT | Orden de visualización (0 = portada) |
 
-#### `inquiries`
+#### `ak_inquiries`
 Mensajes de contacto enviados desde el formulario público.
 
 | Columna | Tipo | Descripción |
@@ -251,8 +251,8 @@ Todas las tablas tienen RLS habilitado:
 | SELECT colecciones | Sí | Sí |
 | SELECT imágenes | Sí | Sí |
 | INSERT / UPDATE / DELETE | No | Sí |
-| INSERT inquiries | Sí (formulario público) | Sí |
-| SELECT inquiries | No | Sí |
+| INSERT ak_inquiries | Sí (formulario público) | Sí |
+| SELECT ak_inquiries | No | Sí |
 
 ### Storage RLS
 

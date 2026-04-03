@@ -104,7 +104,7 @@ const supabase = useSupabaseClient()
 
 const { data: inquiries, pending, refresh } = await useAsyncData('admin-inquiries', async () => {
   const { data } = await supabase
-    .from('inquiries')
+    .from('ak_inquiries')
     .select('*')
     .order('created_at', { ascending: false })
   return (data ?? []) as Inquiry[]
@@ -132,7 +132,7 @@ const openInquiry = (inq: Inquiry) => {
 }
 
 const archiveInquiry = async (inq: Inquiry) => {
-  await supabase.from('inquiries').update({ status: 'archived' }).eq('id', inq.id)
+  await supabase.from('ak_inquiries').update({ status: 'archived' }).eq('id', inq.id)
   detailModal.value = false
   await refresh()
 }

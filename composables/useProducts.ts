@@ -25,13 +25,13 @@ export const useProducts = () => {
 
   const fetchPublishedProducts = async (): Promise<ProductWithImages[]> => {
     const { data, error } = await supabase
-      .from('products')
+      .from('ak_products')
       .select(`
         *,
-        product_images (
+        ak_product_images (
           id, image_url, position
         ),
-        collections (
+        ak_collections (
           id, title, slug
         )
       `)
@@ -50,10 +50,10 @@ export const useProducts = () => {
 
   const fetchProductsByCollection = async (collectionId: string): Promise<ProductWithImages[]> => {
     const { data, error } = await supabase
-      .from('products')
+      .from('ak_products')
       .select(`
         *,
-        product_images (
+        ak_product_images (
           id, image_url, position
         )
       `)
@@ -73,13 +73,13 @@ export const useProducts = () => {
 
   const fetchProductBySlug = async (slug: string): Promise<ProductWithImages | null> => {
     const { data, error } = await supabase
-      .from('products')
+      .from('ak_products')
       .select(`
         *,
-        product_images (
+        ak_product_images (
           id, image_url, position
         ),
-        collections (
+        ak_collections (
           id, title, slug, year
         )
       `)
@@ -103,13 +103,13 @@ export const useProducts = () => {
 
   const fetchAllProductsAdmin = async (): Promise<ProductWithImages[]> => {
     const { data, error } = await supabase
-      .from('products')
+      .from('ak_products')
       .select(`
         *,
-        product_images (
+        ak_product_images (
           id, image_url, position
         ),
-        collections (
+        ak_collections (
           id, title, slug
         )
       `)
@@ -127,10 +127,10 @@ export const useProducts = () => {
 
   const fetchProductById = async (id: string): Promise<ProductWithImages | null> => {
     const { data, error } = await supabase
-      .from('products')
+      .from('ak_products')
       .select(`
         *,
-        product_images (
+        ak_product_images (
           id, image_url, position
         )
       `)
@@ -153,7 +153,7 @@ export const useProducts = () => {
 
   const createProduct = async (payload: ProductInsert): Promise<Product> => {
     const { data, error } = await supabase
-      .from('products')
+      .from('ak_products')
       .insert(payload)
       .select()
       .single()
@@ -166,7 +166,7 @@ export const useProducts = () => {
 
   const updateProduct = async (id: string, payload: ProductUpdate): Promise<Product> => {
     const { data, error } = await supabase
-      .from('products')
+      .from('ak_products')
       .update(payload)
       .eq('id', id)
       .select()
@@ -180,7 +180,7 @@ export const useProducts = () => {
 
   const deleteProduct = async (id: string): Promise<void> => {
     const { error } = await supabase
-      .from('products')
+      .from('ak_products')
       .delete()
       .eq('id', id)
 
@@ -224,7 +224,7 @@ export const useProducts = () => {
     }))
 
     const { data, error } = await supabase
-      .from('product_images')
+      .from('ak_product_images')
       .insert(records)
       .select()
 
@@ -236,7 +236,7 @@ export const useProducts = () => {
 
   const deleteProductImage = async (imageId: string, imageUrl: string): Promise<void> => {
     const { error: dbError } = await supabase
-      .from('product_images')
+      .from('ak_product_images')
       .delete()
       .eq('id', imageId)
 
@@ -253,7 +253,7 @@ export const useProducts = () => {
 
   const reorderImages = async (images: ProductImage[]): Promise<void> => {
     const updates = images.map((img, i) =>
-      supabase.from('product_images').update({ position: i }).eq('id', img.id)
+      supabase.from('ak_product_images').update({ position: i }).eq('id', img.id)
     )
     await Promise.all(updates)
   }
@@ -262,7 +262,7 @@ export const useProducts = () => {
 
   const submitInquiry = async (payload: InquiryInsert): Promise<void> => {
     const { error } = await supabase
-      .from('inquiries')
+      .from('ak_inquiries')
       .insert({ ...payload, status: 'new' })
 
     if (error) throw new Error(error.message)

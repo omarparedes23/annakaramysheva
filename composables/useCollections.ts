@@ -19,7 +19,7 @@ export const useCollections = () => {
 
   const fetchCollections = async (): Promise<Collection[]> => {
     const { data, error } = await supabase
-      .from('collections')
+      .from('ak_collections')
       .select('*')
       .order('year', { ascending: false })
 
@@ -31,12 +31,12 @@ export const useCollections = () => {
 
   const fetchCollectionBySlug = async (slug: string): Promise<CollectionWithProducts | null> => {
     const { data, error } = await supabase
-      .from('collections')
+      .from('ak_collections')
       .select(`
         *,
-        products (
+        ak_products (
           *,
-          product_images (
+          ak_product_images (
             id, image_url, position
           )
         )
@@ -56,7 +56,7 @@ export const useCollections = () => {
 
   const fetchAllCollectionsAdmin = async (): Promise<Collection[]> => {
     const { data, error } = await supabase
-      .from('collections')
+      .from('ak_collections')
       .select('*')
       .order('created_at', { ascending: false })
 
@@ -68,7 +68,7 @@ export const useCollections = () => {
 
   const createCollection = async (payload: CollectionInsert): Promise<Collection> => {
     const { data, error } = await supabase
-      .from('collections')
+      .from('ak_collections')
       .insert(payload)
       .select()
       .single()
@@ -81,7 +81,7 @@ export const useCollections = () => {
 
   const updateCollection = async (id: string, payload: CollectionUpdate): Promise<Collection> => {
     const { data, error } = await supabase
-      .from('collections')
+      .from('ak_collections')
       .update(payload)
       .eq('id', id)
       .select()
@@ -95,7 +95,7 @@ export const useCollections = () => {
 
   const deleteCollection = async (id: string): Promise<void> => {
     const { error } = await supabase
-      .from('collections')
+      .from('ak_collections')
       .delete()
       .eq('id', id)
 

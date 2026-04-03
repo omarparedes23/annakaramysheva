@@ -10,7 +10,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- ============================================================
 
 -- Collections
-CREATE TABLE IF NOT EXISTS collections (
+CREATE TABLE IF NOT EXISTS ak_collections (
   id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title       JSONB NOT NULL DEFAULT '{}',
   description JSONB NOT NULL DEFAULT '{}',
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS collections (
 );
 
 -- Products
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS ak_products (
   id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title         JSONB NOT NULL DEFAULT '{}',
   description   JSONB NOT NULL DEFAULT '{}',
@@ -29,20 +29,20 @@ CREATE TABLE IF NOT EXISTS products (
   status        TEXT NOT NULL DEFAULT 'draft'
                   CHECK (status IN ('draft', 'published', 'sold_out')),
   external_link TEXT,
-  collection_id UUID REFERENCES collections(id) ON DELETE SET NULL,
+  collection_id UUID REFERENCES ak_collections(id) ON DELETE SET NULL,
   created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Product Images
-CREATE TABLE IF NOT EXISTS product_images (
+CREATE TABLE IF NOT EXISTS ak_product_images (
   id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  product_id UUID NOT NULL REFERENCES ak_products(id) ON DELETE CASCADE,
   image_url  TEXT NOT NULL,
   position   INT NOT NULL DEFAULT 0
 );
 
 -- Inquiries
-CREATE TABLE IF NOT EXISTS inquiries (
+CREATE TABLE IF NOT EXISTS ak_inquiries (
   id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name       TEXT NOT NULL,
   email      TEXT NOT NULL,
@@ -56,22 +56,22 @@ CREATE TABLE IF NOT EXISTS inquiries (
 -- INDEXES
 -- ============================================================
 
-CREATE INDEX IF NOT EXISTS idx_products_collection_id ON products(collection_id);
-CREATE INDEX IF NOT EXISTS idx_products_status ON products(status);
-CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
-CREATE INDEX IF NOT EXISTS idx_collections_slug ON collections(slug);
-CREATE INDEX IF NOT EXISTS idx_product_images_product_id ON product_images(product_id);
-CREATE INDEX IF NOT EXISTS idx_inquiries_status ON inquiries(status);
-CREATE INDEX IF NOT EXISTS idx_product_images_position ON product_images(product_id, position);
+CREATE INDEX IF NOT EXISTS idx_ak_products_collection_id ON ak_products(collection_id);
+CREATE INDEX IF NOT EXISTS idx_ak_products_status ON ak_products(status);
+CREATE INDEX IF NOT EXISTS idx_ak_products_slug ON ak_products(slug);
+CREATE INDEX IF NOT EXISTS idx_ak_collections_slug ON ak_collections(slug);
+CREATE INDEX IF NOT EXISTS idx_ak_product_images_product_id ON ak_product_images(product_id);
+CREATE INDEX IF NOT EXISTS idx_ak_inquiries_status ON ak_inquiries(status);
+CREATE INDEX IF NOT EXISTS idx_ak_product_images_position ON ak_product_images(product_id, position);
 
 -- ============================================================
 -- ROW LEVEL SECURITY
 -- ============================================================
 
-ALTER TABLE collections    ENABLE ROW LEVEL SECURITY;
-ALTER TABLE products       ENABLE ROW LEVEL SECURITY;
-ALTER TABLE product_images ENABLE ROW LEVEL SECURITY;
-ALTER TABLE inquiries      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ak_collections    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ak_products       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ak_product_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ak_inquiries      ENABLE ROW LEVEL SECURITY;
 
 -- ============================================================
 -- POLICIES — Collections
@@ -79,25 +79,25 @@ ALTER TABLE inquiries      ENABLE ROW LEVEL SECURITY;
 
 -- Public can read published collections (and their products)
 CREATE POLICY "Public can read collections"
-  ON collections FOR SELECT
+  ON ak_collections FOR SELECT
   USING (true);
 
 -- Only authenticated users (admin) can insert
 CREATE POLICY "Authenticated can insert collections"
-  ON collections FOR INSERT
+  ON ak_collections FOR INSERT
   TO authenticated
   WITH CHECK (true);
 
 -- Only authenticated users can update
 CREATE POLICY "Authenticated can update collections"
-  ON collections FOR UPDATE
+  ON ak_collections FOR UPDATE
   TO authenticated
   USING (true)
   WITH CHECK (true);
 
 -- Only authenticated users can delete
 CREATE POLICY "Authenticated can delete collections"
-  ON collections FOR DELETE
+  ON ak_collections FOR DELETE
   TO authenticated
   USING (true);
 
@@ -107,28 +107,28 @@ CREATE POLICY "Authenticated can delete collections"
 
 -- Public can read published products
 CREATE POLICY "Public can read published products"
-  ON products FOR SELECT
+  ON ak_products FOR SELECT
   USING (status = 'published' OR status = 'sold_out');
 
 -- Authenticated admin sees all products including drafts
 CREATE POLICY "Authenticated can read all products"
-  ON products FOR SELECT
+  ON ak_products FOR SELECT
   TO authenticated
   USING (true);
 
 CREATE POLICY "Authenticated can insert products"
-  ON products FOR INSERT
+  ON ak_products FOR INSERT
   TO authenticated
   WITH CHECK (true);
 
 CREATE POLICY "Authenticated can update products"
-  ON products FOR UPDATE
+  ON ak_products FOR UPDATE
   TO authenticated
   USING (true)
   WITH CHECK (true);
 
 CREATE POLICY "Authenticated can delete products"
-  ON products FOR DELETE
+  ON ak_products FOR DELETE
   TO authenticated
   USING (true);
 
@@ -137,22 +137,22 @@ CREATE POLICY "Authenticated can delete products"
 -- ============================================================
 
 CREATE POLICY "Public can read product images"
-  ON product_images FOR SELECT
+  ON ak_product_images FOR SELECT
   USING (true);
 
 CREATE POLICY "Authenticated can insert product images"
-  ON product_images FOR INSERT
+  ON ak_product_images FOR INSERT
   TO authenticated
   WITH CHECK (true);
 
 CREATE POLICY "Authenticated can update product images"
-  ON product_images FOR UPDATE
+  ON ak_product_images FOR UPDATE
   TO authenticated
   USING (true)
   WITH CHECK (true);
 
 CREATE POLICY "Authenticated can delete product images"
-  ON product_images FOR DELETE
+  ON ak_product_images FOR DELETE
   TO authenticated
   USING (true);
 
@@ -162,23 +162,23 @@ CREATE POLICY "Authenticated can delete product images"
 
 -- Anyone can insert (submit contact form)
 CREATE POLICY "Public can insert inquiries"
-  ON inquiries FOR INSERT
+  ON ak_inquiries FOR INSERT
   WITH CHECK (true);
 
 -- Only authenticated admin can read inquiries
 CREATE POLICY "Authenticated can read inquiries"
-  ON inquiries FOR SELECT
+  ON ak_inquiries FOR SELECT
   TO authenticated
   USING (true);
 
 CREATE POLICY "Authenticated can update inquiries"
-  ON inquiries FOR UPDATE
+  ON ak_inquiries FOR UPDATE
   TO authenticated
   USING (true)
   WITH CHECK (true);
 
 CREATE POLICY "Authenticated can delete inquiries"
-  ON inquiries FOR DELETE
+  ON ak_inquiries FOR DELETE
   TO authenticated
   USING (true);
 
@@ -225,7 +225,7 @@ CREATE POLICY "Authenticated can delete product images"
 -- SEED DATA (optional example)
 -- ============================================================
 
--- INSERT INTO collections (title, description, slug, year) VALUES
+-- INSERT INTO ak_collections (title, description, slug, year) VALUES
 -- (
 --   '{"en": "Spring Silence", "ru": "Весенняя Тишина"}',
 --   '{"en": "A meditation on quiet mornings and linen.", "ru": "Медитация о тихих утрах и льне."}',

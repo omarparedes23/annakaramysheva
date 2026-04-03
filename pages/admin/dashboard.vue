@@ -127,7 +127,7 @@ const { data: collections } = await useAsyncData('admin-dash-collections', fetch
 // Recent inquiries
 const { data: inquiries } = await useAsyncData('admin-dash-inquiries', async () => {
   const { data } = await supabase
-    .from('inquiries')
+    .from('ak_inquiries')
     .select('*')
     .order('created_at', { ascending: false })
     .limit(5)
