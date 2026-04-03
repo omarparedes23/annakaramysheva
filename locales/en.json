@@ -74,7 +74,8 @@
     "error_generic":    "Something went wrong. Please try again.",
     "info_designer":    "Designer",
     "info_location":    "Location",
-    "info_email":       "Email"
+    "info_email":       "Email",
+    "info_phone":       "Phone"
   },
 
   "seo": {

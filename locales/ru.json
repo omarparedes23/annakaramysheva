@@ -74,7 +74,8 @@
     "error_generic":    "Произошла ошибка. Попробуйте ещё раз.",
     "info_designer":    "Дизайнер",
     "info_location":    "Город",
-    "info_email":       "Email"
+    "info_email":       "Email",
+    "info_phone":       "Телефон"
   },
 
   "seo": {

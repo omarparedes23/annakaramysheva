@@ -112,21 +112,30 @@
               <div>
                 <p class="label text-bone-500 mb-2">{{ $t('contact.info_email') }}</p>
                 <a
-                  href="mailto:hello@annakaramysheva.com"
+                  href="mailto:anitamorsito777@yandex.ru"
                   class="font-sans text-sm text-jet-700 hover:text-jet-500 transition-colors"
                 >
-                  hello@annakaramysheva.com
+                  anitamorsito777@yandex.ru
                 </a>
               </div>
               <div>
-                <p class="label text-bone-500 mb-2">Instagram</p>
+                <p class="label text-bone-500 mb-2">{{ $t('contact.info_phone') }}</p>
                 <a
-                  href="https://www.instagram.com/annakaramysheva"
+                  href="tel:+79087808967"
+                  class="font-sans text-sm text-jet-700 hover:text-jet-500 transition-colors"
+                >
+                  +7 908 780-89-67
+                </a>
+              </div>
+              <div>
+                <p class="label text-bone-500 mb-2">Telegram</p>
+                <a
+                  href="https://t.me/anitamorsito"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="font-sans text-sm text-jet-700 hover:text-jet-500 transition-colors"
                 >
-                  @annakaramysheva
+                  @anitamorsito
                 </a>
               </div>
             </div>
