@@ -32,6 +32,8 @@ export default defineNuxtConfig({
         '/contact',
         '/products/*',
         '/collections/*',
+        '/en',
+        '/en/*',
       ],
     },
   },
