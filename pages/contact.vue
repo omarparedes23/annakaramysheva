@@ -78,6 +78,22 @@
                   />
                 </div>
 
+                <!-- Consent -->
+                <div class="flex items-start gap-3">
+                  <input
+                    id="consent"
+                    v-model="consentGiven"
+                    type="checkbox"
+                    class="mt-1 h-4 w-4 accent-black cursor-pointer flex-shrink-0"
+                  />
+                  <label for="consent" class="text-xs text-neutral-500 leading-relaxed cursor-pointer">
+                    {{ $t('contact.consent_text') }}
+                    <NuxtLink :to="localePath('/privacy')" class="underline hover:text-black transition-colors">
+                      {{ $t('contact.consent_link') }}
+                    </NuxtLink>
+                  </label>
+                </div>
+
                 <!-- Error -->
                 <p v-if="error" class="font-sans text-xs text-red-600">{{ error }}</p>
 
@@ -86,6 +102,7 @@
                   type="submit"
                   variant="primary"
                   :loading="loading"
+                  :disabled="!consentGiven"
                   class="w-full md:w-auto"
                 >
                   {{ $t('contact.submit') }}
@@ -170,12 +187,17 @@ const form = reactive({
   message: '',
 })
 
-const loading   = ref(false)
-const submitted = ref(false)
-const error     = ref<string | null>(null)
+const consentGiven = ref(false)
+const loading      = ref(false)
+const submitted    = ref(false)
+const error        = ref<string | null>(null)
 
 const handleSubmit = async () => {
-  error.value   = null
+  error.value = null
+  if (!consentGiven.value) {
+    error.value = t('contact.consent_required')
+    return
+  }
   loading.value = true
   try {
     await submitInquiry({ name: form.name, email: form.email, message: form.message })

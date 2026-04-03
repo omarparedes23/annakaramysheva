@@ -9,7 +9,8 @@
 
   "footer": {
     "navigation": "Navigation",
-    "contact":    "Contact"
+    "contact":    "Contact",
+    "privacy":    "Privacy"
   },
 
   "home": {
@@ -75,7 +76,35 @@
     "info_designer":    "Designer",
     "info_location":    "Location",
     "info_email":       "Email",
-    "info_phone":       "Phone"
+    "info_phone":       "Phone",
+    "consent_text":     "By submitting this form, I agree to the processing of my personal data as described in the ",
+    "consent_link":     "Privacy Policy",
+    "consent_required": "Please confirm your consent to the processing of personal data."
+  },
+
+  "privacy": {
+    "label":          "Legal",
+    "heading":        "Privacy Policy",
+    "effective_date": "Effective date: April 4, 2026",
+    "seo_description": "Privacy Policy for Anna Karamysheva dress & design — personal data processing.",
+
+    "section_controller_title": "Data controller",
+    "section_controller_text":  "This website is operated by sole trader (ИП) Karamysheva Anna, Voronezh, Russia.",
+
+    "section_data_title": "What data we collect",
+    "section_data_text":  "We only collect the information you voluntarily provide via the contact form: your name, email address, and message. No other personal data is collected.",
+
+    "section_purpose_title": "Purpose of processing",
+    "section_purpose_text":  "Your data is used solely to respond to your enquiry. It is not shared with third parties and is not used for marketing or advertising purposes.",
+
+    "section_storage_title": "Data storage",
+    "section_storage_text":  "Your data is stored in a secure database. You may request deletion at any time by writing to: ",
+
+    "section_consent_title": "Consent",
+    "section_consent_text":  "By submitting the contact form, you confirm your consent to the processing of the personal data provided, in accordance with this policy and applicable data protection legislation.",
+
+    "section_contact_title": "Questions & requests",
+    "section_contact_text":  "For any questions regarding the processing of your personal data, please contact us at: "
   },
 
   "seo": {

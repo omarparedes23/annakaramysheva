@@ -30,6 +30,7 @@ export default defineNuxtConfig({
         '/',
         '/gallery',
         '/contact',
+        '/privacy',
         '/products/*',
         '/collections/*',
         '/en',
