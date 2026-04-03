@@ -34,9 +34,9 @@ export const useCollections = () => {
       .from('ak_collections')
       .select(`
         *,
-        ak_products (
+        products:ak_products (
           *,
-          ak_product_images (
+          product_images:ak_product_images (
             id, image_url, position
           )
         )

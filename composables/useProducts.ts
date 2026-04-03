@@ -28,10 +28,10 @@ export const useProducts = () => {
       .from('ak_products')
       .select(`
         *,
-        ak_product_images (
+        product_images:ak_product_images (
           id, image_url, position
         ),
-        ak_collections (
+        collections:ak_collections (
           id, title, slug
         )
       `)
@@ -53,7 +53,7 @@ export const useProducts = () => {
       .from('ak_products')
       .select(`
         *,
-        ak_product_images (
+        product_images:ak_product_images (
           id, image_url, position
         )
       `)
@@ -76,10 +76,10 @@ export const useProducts = () => {
       .from('ak_products')
       .select(`
         *,
-        ak_product_images (
+        product_images:ak_product_images (
           id, image_url, position
         ),
-        ak_collections (
+        collections:ak_collections (
           id, title, slug, year
         )
       `)
@@ -106,10 +106,10 @@ export const useProducts = () => {
       .from('ak_products')
       .select(`
         *,
-        ak_product_images (
+        product_images:ak_product_images (
           id, image_url, position
         ),
-        ak_collections (
+        collections:ak_collections (
           id, title, slug
         )
       `)
@@ -130,7 +130,7 @@ export const useProducts = () => {
       .from('ak_products')
       .select(`
         *,
-        ak_product_images (
+        product_images:ak_product_images (
           id, image_url, position
         )
       `)

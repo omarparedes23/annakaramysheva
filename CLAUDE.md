@@ -303,7 +303,7 @@ El bucket `products` es **público para lectura**. Solo usuarios autenticados pu
 - **Idioma por defecto:** Ruso (`ru`) — sin prefijo de URL
 - **Inglés:** con prefijo `/en/` en la URL
 - **Estrategia:** `prefix_except_default`
-- **Detección:** cookie `i18n_redirected`, redirige desde la raíz
+- **Detección automática:** desactivada (`detectBrowserLanguage: false`) — el locale lo determina únicamente la URL para evitar SSR hydration mismatches
 
 ```
 /              → Ruso (default)
@@ -674,3 +674,34 @@ Las imágenes de productos son contenido público por naturaleza. Un bucket priv
 ### Por qué el botón "Consultar disponibilidad" usa `external_link`
 
 La diseñadora prefiere manejar las consultas por WhatsApp, Telegram o un formulario externo según el momento. `external_link` es un campo libre que puede apuntar a cualquier servicio sin cambiar el código.
+
+### Por qué las tablas llevan prefijo `ak_`
+
+Todas las tablas de la base de datos tienen el prefijo `ak_` (`ak_products`, `ak_collections`, `ak_product_images`, `ak_inquiries`) para evitar colisiones con tablas del sistema o de otros proyectos en el mismo esquema de Supabase.
+
+### Por qué los nested selects usan aliases PostgREST
+
+Aunque las tablas en DB se llaman `ak_product_images`, `ak_collections`, etc., los queries usan aliases:
+
+```typescript
+.from('ak_products')
+.select(`
+  *,
+  product_images:ak_product_images ( id, image_url, position ),
+  collections:ak_collections ( id, title, slug )
+`)
+```
+
+PostgREST devuelve la respuesta con las claves `product_images` y `collections` (sin el prefijo `ak_`), de modo que los tipos TypeScript (`ProductWithImages`, `CollectionWithProducts`) y todos los componentes que acceden a `product.product_images` o `product.collections` no necesitan cambios. El prefijo `ak_` es un detalle de infraestructura de DB, no de la capa de presentación.
+
+**Regla:** si se añade un nuevo nested select, usar siempre la sintaxis `nombre_original:ak_nombre_tabla(...)`.
+
+### Por qué `detectBrowserLanguage: false` en i18n
+
+Con `detectBrowserLanguage` habilitado, el servidor SSR lee el header `Accept-Language` del browser y puede renderizar la página en un locale diferente al que el cliente inicializa (basado en cookie o URL). Esto produce hydration mismatches masivos en Vue 3.
+
+Con la estrategia `prefix_except_default`, el locale lo determina únicamente la URL:
+- `/` → ruso (default)
+- `/en/` → inglés
+
+No se necesita detección automática. El cambio de idioma sigue funcionando vía `setLocale()` en el header, que redirige a la URL con o sin prefijo `/en/`.
