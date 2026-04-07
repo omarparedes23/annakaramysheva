@@ -271,12 +271,25 @@ export const useProducts = () => {
   // ─── Generate slug ────────────────────────────────────────
 
   const generateSlug = (title: string): string => {
-    return title
+    // If title is empty or only contains non-ASCII characters, return empty
+    if (!title || !title.trim()) return ''
+    
+    const slug = title
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
       .replace(/\s+/g, '-')
       .replace(/--+/g, '-')
       .replace(/^-|-$/g, '')
+    
+    // If slug is empty (e.g., title was all Cyrillic), return empty to trigger fallback
+    return slug
+  }
+  
+  const generateFallbackSlug = (): string => {
+    // Generate a slug using timestamp and random string
+    const timestamp = Date.now().toString(36)
+    const random = Math.random().toString(36).substring(2, 6)
+    return `item-${timestamp}-${random}`
   }
 
   return {
@@ -296,5 +309,6 @@ export const useProducts = () => {
     reorderImages,
     submitInquiry,
     generateSlug,
+    generateFallbackSlug,
   }
 }

@@ -67,38 +67,87 @@
 
     <!-- ─── Featured Products ─────────────────────────────── -->
     <section class="section bg-bone-50">
+
+      <!-- Header -->
       <div class="container-editorial">
         <div class="flex items-end justify-between mb-14">
           <h2 class="display-md text-jet-900">{{ $t('home.featured_heading') }}</h2>
-          <NuxtLink
-            :to="localePath('/gallery')"
-            class="hidden md:block font-sans text-xs tracking-widest uppercase text-jet-500 hover:text-jet-900 transition-colors duration-200"
-          >
-            {{ $t('home.view_all') }} →
-          </NuxtLink>
-        </div>
 
-        <!-- Loading -->
-        <div v-if="pending" class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-          <div v-for="i in 3" :key="i" class="aspect-3/4 bg-bone-100 animate-pulse" />
-        </div>
-
-        <!-- Products grid -->
-        <div v-else-if="featuredProducts.length" class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-          <ProductCard
-            v-for="product in featuredProducts"
-            :key="product.id"
-            :product="product"
-          />
-        </div>
-
-        <!-- Mobile view all -->
-        <div class="mt-12 text-center md:hidden">
-          <AppButton variant="ghost" tag="NuxtLink" :to="localePath('/gallery')">
-            {{ $t('home.view_all') }}
-          </AppButton>
+          <!-- Desktop: arrows + link -->
+          <div class="hidden md:flex items-center gap-6">
+            <div v-if="totalPages > 1" class="flex items-center gap-3">
+              <button
+                :disabled="currentPage === 0"
+                class="w-9 h-9 flex items-center justify-center border border-jet-900 transition-colors duration-200 disabled:opacity-25 disabled:cursor-not-allowed hover:bg-jet-900 hover:text-white"
+                aria-label="Anterior"
+                @click="currentPage--"
+              >←</button>
+              <span class="font-sans text-xs text-jet-500 tabular-nums">
+                {{ currentPage + 1 }} / {{ totalPages }}
+              </span>
+              <button
+                :disabled="currentPage === totalPages - 1"
+                class="w-9 h-9 flex items-center justify-center border border-jet-900 transition-colors duration-200 disabled:opacity-25 disabled:cursor-not-allowed hover:bg-jet-900 hover:text-white"
+                aria-label="Siguiente"
+                @click="currentPage++"
+              >→</button>
+            </div>
+            <NuxtLink
+              :to="localePath('/gallery')"
+              class="font-sans text-xs tracking-widest uppercase text-jet-500 hover:text-jet-900 transition-colors duration-200"
+            >{{ $t('home.view_all') }} →</NuxtLink>
+          </div>
         </div>
       </div>
+
+      <!-- Loading skeleton -->
+      <div v-if="pending" class="container-editorial">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+          <div v-for="i in 3" :key="i" class="aspect-3/4 bg-bone-100 animate-pulse" />
+        </div>
+      </div>
+
+      <template v-else-if="allProducts.length">
+        <!-- ── MOBILE: swipe carousel ── -->
+        <div class="md:hidden">
+          <div class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pl-6 pr-6 pb-2 carousel-scroll" @scroll="onCarouselScroll">
+            <div
+              v-for="product in allProducts"
+              :key="product.id"
+              class="snap-start flex-shrink-0 w-[78vw]"
+            >
+              <ProductCard :product="product" />
+            </div>
+          </div>
+          <!-- Dots indicator -->
+          <div class="flex justify-center gap-1.5 mt-6">
+            <span
+              v-for="(_, i) in allProducts"
+              :key="i"
+              class="w-1 h-1 rounded-full bg-jet-900 transition-opacity duration-200"
+              :class="i === activeCarouselIndex ? 'opacity-100' : 'opacity-20'"
+            />
+          </div>
+          <!-- View all -->
+          <div class="mt-8 text-center">
+            <AppButton variant="ghost" tag="NuxtLink" :to="localePath('/gallery')">
+              {{ $t('home.view_all') }}
+            </AppButton>
+          </div>
+        </div>
+
+        <!-- ── DESKTOP: paginated grid ── -->
+        <div class="hidden md:block container-editorial">
+          <div class="grid grid-cols-3 gap-8">
+            <ProductCard
+              v-for="product in featuredProducts"
+              :key="product.id"
+              :product="product"
+            />
+          </div>
+        </div>
+      </template>
+
     </section>
 
     <!-- ─── Editorial Strip ───────────────────────────────── -->
@@ -154,7 +203,22 @@ const { fetchPublishedProducts, localize } = useProducts()
 
 const { data: products, pending } = await useAsyncData('home-products', fetchPublishedProducts)
 
-const featuredProducts = computed(() => (products.value ?? []).slice(0, 3))
+const PAGE_SIZE = 3
+const currentPage = ref(0)
+const activeCarouselIndex = ref(0)
+
+const allProducts = computed(() => products.value ?? [])
+const totalPages = computed(() => Math.ceil(allProducts.value.length / PAGE_SIZE))
+const featuredProducts = computed(() =>
+  allProducts.value.slice(currentPage.value * PAGE_SIZE, (currentPage.value + 1) * PAGE_SIZE)
+)
+
+// Track which card is centered in the mobile carousel
+function onCarouselScroll(e: Event) {
+  const el = e.target as HTMLElement
+  const cardWidth = el.scrollWidth / allProducts.value.length
+  activeCarouselIndex.value = Math.round(el.scrollLeft / cardWidth)
+}
 
 const heroProduct = computed(() => products.value?.[0] ?? null)
 const heroProductTitle = computed(() => heroProduct.value ? localize(heroProduct.value.title) : '')
@@ -177,5 +241,13 @@ useSeo({
 @keyframes scrollLine {
   0%   { transform: translateY(-100%); }
   100% { transform: translateY(300%); }
+}
+
+.carousel-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.carousel-scroll::-webkit-scrollbar {
+  display: none;
 }
 </style>

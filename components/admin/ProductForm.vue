@@ -283,6 +283,7 @@ const {
   saveProductImages,
   deleteProductImage,
   generateSlug,
+  generateFallbackSlug,
 } = useProducts()
 
 // ─── Form state ────────────────────────────────────────────
@@ -313,14 +314,27 @@ const fileInputRef  = ref<HTMLInputElement | null>(null)
 
 // ─── Slug generation ──────────────────────────────────────
 
+const generateProductSlug = (title: string): string => {
+  const slug = generateSlug(title)
+  // If slug is empty (e.g., title was all Cyrillic), use fallback
+  return slug || generateFallbackSlug()
+}
+
 const autoSlug = () => {
   const base = form.title.en || form.title.ru
-  if (base) form.slug = generateSlug(base)
+  if (base) form.slug = generateProductSlug(base)
 }
 
 watch(() => form.title.en, (val) => {
   if (props.mode === 'create' && val) {
-    form.slug = generateSlug(val)
+    form.slug = generateProductSlug(val)
+  }
+})
+
+watch(() => form.title.ru, (val) => {
+  if (props.mode === 'create' && val && !form.title.en) {
+    // Only auto-generate from Russian if English is empty
+    form.slug = generateProductSlug(val)
   }
 })
 
