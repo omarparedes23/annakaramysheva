@@ -41,8 +41,10 @@
       <Transition name="lightbox">
         <div
           v-if="lightboxOpen"
-          class="fixed inset-0 z-50 bg-jet-900/95 flex items-center justify-center"
+          class="fixed inset-0 z-50 bg-jet-900/95 flex items-center justify-center touch-pan-y"
           @click.self="lightboxOpen = false"
+          @touchstart="onTouchStart"
+          @touchend="onTouchEnd"
         >
           <!-- Close -->
           <button
@@ -112,6 +114,11 @@ const transitioning = ref(false)
 const lightboxOpen  = ref(false)
 const lightboxIndex = ref(0)
 
+// Touch swipe handling for mobile
+const touchStartX = ref(0)
+const touchEndX = ref(0)
+const minSwipeDistance = 50
+
 const activeImage = computed(() => props.images[activeIndex.value] ?? null)
 
 const setActive = (i: number) => {
@@ -142,6 +149,29 @@ const handleKey = (e: KeyboardEvent) => {
   if (e.key === 'ArrowLeft')  prevImage()
   if (e.key === 'ArrowRight') nextImage()
   if (e.key === 'Escape')     lightboxOpen.value = false
+}
+
+// Touch swipe handlers
+const onTouchStart = (e: TouchEvent) => {
+  touchStartX.value = e.changedTouches[0].screenX
+}
+
+const onTouchEnd = (e: TouchEvent) => {
+  touchEndX.value = e.changedTouches[0].screenX
+  handleSwipe()
+}
+
+const handleSwipe = () => {
+  const swipeDistance = touchEndX.value - touchStartX.value
+  if (Math.abs(swipeDistance) > minSwipeDistance) {
+    if (swipeDistance > 0) {
+      // Swiped right -> go to previous
+      prevImage()
+    } else {
+      // Swiped left -> go to next
+      nextImage()
+    }
+  }
 }
 
 onMounted(() => document.addEventListener('keydown', handleKey))

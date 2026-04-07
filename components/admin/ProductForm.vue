@@ -293,7 +293,7 @@ const form = reactive({
   slug:          props.product?.slug ?? '',
   price:         props.product?.price ?? null as number | null,
   status:        props.product?.status ?? 'draft',
-  external_link: props.product?.external_link ?? '',
+  external_link: props.product?.external_link ?? (props.mode === 'create' ? 'https://wa.me/+79087808967' : ''),
   collection_id: props.product?.collection_id ?? null as string | null,
 })
 
