@@ -110,7 +110,9 @@ const config = useRuntimeConfig()
 const showCommercialInfo = config.public.showCommercialInfo as boolean
 
 const coverMedia = computed(() =>
-  props.product.product_images?.[0] ?? null
+  props.product.product_images?.find(m => m.media_type === 'video')
+  ?? props.product.product_images?.[0]
+  ?? null
 )
 
 const title = computed(() => localize(props.product.title))
