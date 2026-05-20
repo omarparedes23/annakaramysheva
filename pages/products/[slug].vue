@@ -293,7 +293,7 @@ const nextProduct = computed(() =>
 )
 
 const coverMedia = computed(() =>
-  product.value?.product_images?.find(m => m.media_type === 'image')
+  product.value?.product_images?.find(m => m.media_type === 'video')
   || product.value?.product_images?.[0]
   || null
 )
