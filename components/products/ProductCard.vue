@@ -30,18 +30,18 @@
           <span class="label text-bone-400">Anna Karamysheva</span>
         </div>
 
-        <div v-if="product.status === 'sold_out'" class="absolute bottom-4 left-4">
+        <div v-if="showCommercialInfo && product.status === 'sold_out'" class="absolute bottom-4 left-4">
           <span class="badge-sold-out">{{ $t('product.sold_out') }}</span>
         </div>
       </div>
 
-      <div class="mt-4 space-y-1.5">
-        <p class="font-serif text-base font-light text-jet-900 leading-snug">
+      <div v-if="collectionTitle || showCommercialInfo" class="mt-4 space-y-1.5">
+        <p v-if="showCommercialInfo" class="font-serif text-base font-light text-jet-900 leading-snug">
           {{ title }}
         </p>
         <div class="flex items-center justify-between">
           <p v-if="collectionTitle" class="label">{{ collectionTitle }}</p>
-          <p v-if="product.price" class="font-sans text-xs font-light text-jet-600">
+          <p v-if="showCommercialInfo && product.price" class="font-sans text-xs font-light text-jet-600">
             {{ formattedPrice }}
           </p>
         </div>
@@ -77,18 +77,18 @@
           <span class="label text-bone-400">Anna Karamysheva</span>
         </div>
 
-        <div v-if="product.status === 'sold_out'" class="absolute bottom-4 left-4">
+        <div v-if="showCommercialInfo && product.status === 'sold_out'" class="absolute bottom-4 left-4">
           <span class="badge-sold-out">{{ $t('product.sold_out') }}</span>
         </div>
       </div>
 
-      <div class="mt-4 space-y-1.5">
-        <p class="font-serif text-base font-light text-jet-900 leading-snug">
+      <div v-if="collectionTitle || showCommercialInfo" class="mt-4 space-y-1.5">
+        <p v-if="showCommercialInfo" class="font-serif text-base font-light text-jet-900 leading-snug">
           {{ title }}
         </p>
         <div class="flex items-center justify-between">
           <p v-if="collectionTitle" class="label">{{ collectionTitle }}</p>
-          <p v-if="product.price" class="font-sans text-xs font-light text-jet-600">
+          <p v-if="showCommercialInfo && product.price" class="font-sans text-xs font-light text-jet-600">
             {{ formattedPrice }}
           </p>
         </div>
@@ -106,6 +106,8 @@ const props = defineProps<{
 
 const localePath = useLocalePath()
 const { localize, formatPrice } = useProducts()
+const config = useRuntimeConfig()
+const showCommercialInfo = config.public.showCommercialInfo as boolean
 
 const coverMedia = computed(() =>
   props.product.product_images?.[0] ?? null

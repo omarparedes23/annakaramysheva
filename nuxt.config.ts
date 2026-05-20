@@ -98,7 +98,8 @@ export default defineNuxtConfig({
       supabaseKey: process.env.SUPABASE_KEY,
       siteUrl: process.env.SITE_URL || 'https://annakaramysheva.com',
       siteName: 'Anna Karamysheva',
-      siteDescription: 'Luxury fashion designer from Voronezh. Loved. Happy. Special.',
+      siteDescription: 'Luxury fashion designer from Moscow. Loved. Happy. Special.',
+      showCommercialInfo: false,
     },
   },
 
@@ -110,7 +111,7 @@ export default defineNuxtConfig({
       viewport: 'width=device-width, initial-scale=1',
       title: 'Anna Karamysheva — dress & design',
       meta: [
-        { name: 'description', content: 'Любимая. Счастливая. Особенная. Luxury fashion designer from Voronezh, Russia.' },
+        { name: 'description', content: 'Любимая. Счастливая. Особенная. Luxury fashion designer from Moscow, Russia.' },
         { name: 'theme-color', content: '#0a0a0a' },
         { property: 'og:site_name', content: 'Anna Karamysheva' },
         { property: 'og:type', content: 'website' },

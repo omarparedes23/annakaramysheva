@@ -51,7 +51,7 @@
     "ask_question":         "Ask a question",
     "you_may_like":         "You may also like",
     "details_label":        "About this piece",
-    "details_text":         "Handmade. Natural materials. Made in Voronezh, Russia.",
+    "details_text":         "Handmade. Natural materials. Made in Moscow, Russia.",
     "care_label":           "Care",
     "care_text":            "Gentle wash at 30°C or dry clean only. Do not wring.",
     "shipping_label":       "Shipping",
@@ -89,7 +89,7 @@
     "seo_description": "Privacy Policy for Anna Karamysheva dress & design — personal data processing.",
 
     "section_controller_title": "Data controller",
-    "section_controller_text":  "This website is operated by sole trader (ИП) Karamysheva Anna, Voronezh, Russia.",
+    "section_controller_text":  "This website is operated by sole trader (ИП) Karamysheva Anna, Moscow, Russia.",
 
     "section_data_title": "What data we collect",
     "section_data_text":  "We only collect the information you voluntarily provide via the contact form: your name, email address, and message. No other personal data is collected.",
@@ -108,7 +108,7 @@
   },
 
   "seo": {
-    "home_description":       "Anna Karamysheva — luxury fashion designer from Voronezh, Russia. Loved. Happy. Special.",
+    "home_description":       "Anna Karamysheva — luxury fashion designer from Moscow, Russia. Loved. Happy. Special.",
     "gallery_description":    "Gallery of Anna Karamysheva pieces — handcrafted womenswear in the luxury minimalism tradition.",
     "contact_description":    "Contact Anna Karamysheva for a consultation or bespoke order."
   },

@@ -124,7 +124,7 @@
             <div class="space-y-4">
               <div>
                 <p class="label text-bone-500 mb-2">{{ $t('contact.info_location') }}</p>
-                <p class="font-sans text-sm text-jet-700">Воронеж, Россия</p>
+                <p class="font-sans text-sm text-jet-700">Москва, Россия</p>
               </div>
               <div>
                 <p class="label text-bone-500 mb-2">{{ $t('contact.info_email') }}</p>
