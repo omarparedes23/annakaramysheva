@@ -35,7 +35,7 @@
               v-if="prevProduct && collectionProducts.length > 1"
               class="text-jet-400 hover:text-jet-900 transition-colors duration-200 p-1"
               aria-label="Anterior"
-              @click="navigateTo(localePath(`/products/${prevProduct.slug}`))"
+              @click="goToProduct(prevProduct.slug)"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 19l-7-7 7-7" />
@@ -72,7 +72,7 @@
               v-if="nextProduct && collectionProducts.length > 1"
               class="text-jet-400 hover:text-jet-900 transition-colors duration-200 p-1"
               aria-label="Siguiente"
-              @click="navigateTo(localePath(`/products/${nextProduct.slug}`))"
+              @click="goToProduct(nextProduct.slug)"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5l7 7-7 7" />
@@ -309,9 +309,17 @@ const onSwipeEnd = (e: TouchEvent) => {
   const diff = e.changedTouches[0].screenX - swipeTouchStartX.value
   if (Math.abs(diff) < minSwipeDistance) return
   if (diff > 0 && prevProduct.value) {
-    navigateTo(localePath(`/products/${prevProduct.value.slug}`))
+    goToProduct(prevProduct.value.slug)
   } else if (diff < 0 && nextProduct.value) {
-    navigateTo(localePath(`/products/${nextProduct.value.slug}`))
+    goToProduct(nextProduct.value.slug)
+  }
+}
+
+const goToProduct = (slug: string) => {
+  if (coverMedia.value?.media_type === 'video') {
+    window.location.href = localePath(`/products/${slug}`)
+  } else {
+    navigateTo(localePath(`/products/${slug}`))
   }
 }
 
