@@ -12,7 +12,7 @@
             «Любимая. Счастливая. Особенная.»
           </p>
           <p class="label text-bone-600">
-            Воронеж, Россия
+            Москва, Россия
           </p>
         </div>
 
@@ -53,7 +53,7 @@
       <div class="divider-dark mt-16 pt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
           <p class="font-sans text-xs text-neutral-500">
-            ИП Карамышева Анна, Воронеж, Россия
+            ИП Карамышева Анна, Москва, Россия
           </p>
           <p class="font-sans text-2xs tracking-widest text-bone-600 uppercase">
             &copy; {{ new Date().getFullYear() }} Anna Karamysheva. All rights reserved.

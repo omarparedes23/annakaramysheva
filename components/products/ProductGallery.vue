@@ -1,40 +1,42 @@
 <template>
   <div class="product-gallery">
     <!-- Main display -->
-    <div
-      class="main-image aspect-3/4 bg-bone-100 overflow-hidden relative"
-      @touchstart="carousel ? onMainTouchStart($event) : undefined"
-      @touchend="carousel ? onMainTouchEnd($event) : undefined"
-    >
-      <template v-if="activeMedia">
-        <NuxtImg
-          v-if="activeMedia.media_type === 'image'"
-          :src="activeMedia.image_url"
-          :alt="alt"
-          :width="1200"
-          :height="1600"
-          class="w-full h-full object-cover transition-opacity duration-300 cursor-zoom-in"
-          :class="{ 'opacity-0': transitioning }"
-          loading="eager"
-          fit="cover"
-          @click="carousel ? handleCarouselClick() : openLightbox(activeIndex)"
-        />
-        <video
-          v-else
-          :src="activeMedia.image_url"
-          class="w-full h-full object-cover"
-          controls
-          playsinline
-          autoplay
-          muted
-          loop
-        />
-      </template>
+    <div class="relative">
+      <div
+        class="main-image aspect-3/4 bg-bone-100 overflow-hidden"
+        @touchstart="carousel ? onMainTouchStart($event) : undefined"
+        @touchend="carousel ? onMainTouchEnd($event) : undefined"
+      >
+        <template v-if="activeMedia">
+          <NuxtImg
+            v-if="activeMedia.media_type === 'image'"
+            :src="activeMedia.image_url"
+            :alt="alt"
+            :width="1200"
+            :height="1600"
+            class="w-full h-full object-cover transition-opacity duration-300 cursor-zoom-in"
+            :class="{ 'opacity-0': transitioning }"
+            loading="eager"
+            fit="cover"
+            @click="carousel ? handleCarouselClick() : openLightbox(activeIndex)"
+          />
+          <video
+            v-else
+            :src="activeMedia.image_url"
+            class="w-full h-full object-cover"
+            controls
+            playsinline
+            autoplay
+            muted
+            loop
+          />
+        </template>
+      </div>
 
-      <!-- Carousel arrows -->
+      <!-- Carousel arrows (outside overflow-hidden, inside relative wrapper) -->
       <template v-if="carousel && images.length > 1">
         <button
-          class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/75 hover:bg-white backdrop-blur-sm transition-all duration-200"
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/75 hover:bg-white backdrop-blur-sm transition-all duration-200 z-10"
           aria-label="Anterior"
           @click.stop="prev"
         >
@@ -43,7 +45,7 @@
           </svg>
         </button>
         <button
-          class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/75 hover:bg-white backdrop-blur-sm transition-all duration-200"
+          class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/75 hover:bg-white backdrop-blur-sm transition-all duration-200 z-10"
           aria-label="Siguiente"
           @click.stop="next"
         >
