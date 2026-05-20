@@ -22,16 +22,41 @@
     <!-- Portfolio mode: collection carousel (one photo per piece, navigates URLs) -->
     <section v-if="!showCommercialInfo" class="container-editorial pb-24 md:pb-40">
       <div class="max-w-2xl mx-auto">
-        <!-- Image + arrows -->
+
+        <!-- Arrows outside image: flex row [←] [media] [→] -->
         <div
-          class="relative"
+          class="flex items-center gap-4 md:gap-6"
           @touchstart="onSwipeStart"
           @touchend="onSwipeEnd"
         >
-          <div class="aspect-3/4 bg-bone-100 overflow-hidden">
+          <!-- Left arrow slot (always occupies space to keep image centered) -->
+          <div class="w-8 flex-shrink-0 flex justify-center">
+            <button
+              v-if="prevProduct && collectionProducts.length > 1"
+              class="text-jet-400 hover:text-jet-900 transition-colors duration-200 p-1"
+              aria-label="Anterior"
+              @click="navigateTo(localePath(`/products/${prevProduct.slug}`))"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Cover media: image or video -->
+          <div class="flex-1 aspect-3/4 bg-bone-100 overflow-hidden">
+            <video
+              v-if="coverMedia?.media_type === 'video'"
+              :src="coverMedia.image_url"
+              class="w-full h-full object-cover"
+              autoplay
+              muted
+              loop
+              playsinline
+            />
             <NuxtImg
-              v-if="coverImage"
-              :src="coverImage"
+              v-else-if="coverMedia"
+              :src="coverMedia.image_url"
               :alt="imageAlt"
               :width="1200"
               :height="1600"
@@ -41,28 +66,19 @@
             />
           </div>
 
-          <template v-if="collectionProducts.length > 1">
+          <!-- Right arrow slot -->
+          <div class="w-8 flex-shrink-0 flex justify-center">
             <button
-              v-if="prevProduct"
-              class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/75 hover:bg-white backdrop-blur-sm transition-all duration-200 z-10"
-              aria-label="Anterior"
-              @click="navigateTo(localePath(`/products/${prevProduct.slug}`))"
-            >
-              <svg class="w-4 h-4 text-jet-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              v-if="nextProduct"
-              class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/75 hover:bg-white backdrop-blur-sm transition-all duration-200 z-10"
+              v-if="nextProduct && collectionProducts.length > 1"
+              class="text-jet-400 hover:text-jet-900 transition-colors duration-200 p-1"
               aria-label="Siguiente"
               @click="navigateTo(localePath(`/products/${nextProduct.slug}`))"
             >
-              <svg class="w-4 h-4 text-jet-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7" />
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5l7 7-7 7" />
               </svg>
             </button>
-          </template>
+          </div>
         </div>
 
         <!-- Dots: one per piece in the collection -->
@@ -276,10 +292,10 @@ const nextProduct = computed(() =>
     : null
 )
 
-const coverImage = computed(() =>
-  product.value?.product_images?.find(m => m.media_type === 'image')?.image_url
-  || product.value?.product_images?.[0]?.image_url
-  || ''
+const coverMedia = computed(() =>
+  product.value?.product_images?.find(m => m.media_type === 'image')
+  || product.value?.product_images?.[0]
+  || null
 )
 
 // Swipe mobile
@@ -305,8 +321,8 @@ const productDetails = [
   { key: 'product.shipping_label', value: 'product.shipping_text' },
 ]
 
-// SEO
-const ogImage = product.value?.product_images?.find(m => m.media_type === 'image')?.image_url || product.value?.product_images?.[0]?.image_url
+// SEO — only images work as OG tags, never videos
+const ogImage = product.value?.product_images?.find(m => m.media_type === 'image')?.image_url
 useSeo({
   title: title.value,
   description: description.value ? description.value.slice(0, 160) : `${title.value} — luxury dress by Anna Karamysheva`,
