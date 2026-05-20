@@ -1,18 +1,31 @@
 <template>
   <div class="product-gallery">
-    <!-- Main image -->
-    <div class="main-image aspect-3/4 bg-bone-100 overflow-hidden cursor-zoom-in relative" @click="openLightbox(activeIndex)">
-      <NuxtImg
-        v-if="activeImage"
-        :src="activeImage.image_url"
-        :alt="alt"
-        :width="1200"
-        :height="1600"
-        class="w-full h-full object-cover transition-opacity duration-300"
-        :class="{ 'opacity-0': transitioning }"
-        loading="eager"
-        fit="cover"
-      />
+    <!-- Main display -->
+    <div class="main-image aspect-3/4 bg-bone-100 overflow-hidden relative">
+      <template v-if="activeMedia">
+        <NuxtImg
+          v-if="activeMedia.media_type === 'image'"
+          :src="activeMedia.image_url"
+          :alt="alt"
+          :width="1200"
+          :height="1600"
+          class="w-full h-full object-cover transition-opacity duration-300 cursor-zoom-in"
+          :class="{ 'opacity-0': transitioning }"
+          loading="eager"
+          fit="cover"
+          @click="openLightbox(activeIndex)"
+        />
+        <video
+          v-else
+          :src="activeMedia.image_url"
+          class="w-full h-full object-cover"
+          controls
+          playsinline
+          autoplay
+          muted
+          loop
+        />
+      </template>
     </div>
 
     <!-- Thumbnails -->
@@ -20,23 +33,37 @@
       <button
         v-for="(img, i) in images"
         :key="img.id"
-        class="flex-shrink-0 w-16 h-20 overflow-hidden border-2 transition-all duration-200"
+        class="flex-shrink-0 w-16 h-20 overflow-hidden border-2 transition-all duration-200 relative"
         :class="i === activeIndex ? 'border-jet-900' : 'border-transparent hover:border-bone-300'"
         @click="setActive(i)"
       >
-        <NuxtImg
+        <video
+          v-if="img.media_type === 'video'"
+          :src="img.image_url"
+          class="w-full h-full object-cover"
+          muted
+          preload="metadata"
+          playsinline
+        />
+        <img
+          v-else
           :src="img.image_url"
           :alt="`${alt} — view ${i + 1}`"
-          :width="128"
-          :height="160"
           class="w-full h-full object-cover"
           loading="lazy"
-          fit="cover"
         />
+        <span
+          v-if="img.media_type === 'video'"
+          class="absolute inset-0 flex items-center justify-center bg-black/20"
+        >
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
       </button>
     </div>
 
-    <!-- Lightbox -->
+    <!-- Lightbox (images only) -->
     <Teleport to="body">
       <Transition name="lightbox">
         <div
@@ -46,7 +73,6 @@
           @touchstart="onTouchStart"
           @touchend="onTouchEnd"
         >
-          <!-- Close -->
           <button
             class="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-10"
             @click="lightboxOpen = false"
@@ -56,23 +82,21 @@
             </svg>
           </button>
 
-          <!-- Prev -->
           <button
-            v-if="images.length > 1"
+            v-if="imageItems.length > 1"
             class="absolute left-6 text-white/70 hover:text-white transition-colors"
-            @click="prevImage"
+            @click="prevLightboxImage"
           >
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
-          <!-- Image -->
           <div class="max-w-3xl max-h-screen p-12 w-full">
             <NuxtImg
-              v-if="images[lightboxIndex]"
-              :src="images[lightboxIndex].image_url"
-              :alt="`${alt} — view ${lightboxIndex + 1}`"
+              v-if="lightboxImage"
+              :src="lightboxImage.image_url"
+              :alt="`${alt} — view ${lightboxImageIndex + 1}`"
               :width="1200"
               :height="1600"
               class="max-h-[85vh] w-auto mx-auto object-contain"
@@ -80,20 +104,18 @@
             />
           </div>
 
-          <!-- Next -->
           <button
-            v-if="images.length > 1"
+            v-if="imageItems.length > 1"
             class="absolute right-6 text-white/70 hover:text-white transition-colors"
-            @click="nextImage"
+            @click="nextLightboxImage"
           >
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5l7 7-7 7" />
             </svg>
           </button>
 
-          <!-- Counter -->
           <span class="absolute bottom-6 left-1/2 -translate-x-1/2 label text-white/50">
-            {{ lightboxIndex + 1 }} / {{ images.length }}
+            {{ lightboxImageIndex + 1 }} / {{ imageItems.length }}
           </span>
         </div>
       </Transition>
@@ -102,10 +124,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ProductImage } from '~/types/product'
+import type { ProductMedia } from '~/types/product'
 
 const props = defineProps<{
-  images: ProductImage[]
+  images: ProductMedia[]
   alt: string
 }>()
 
@@ -114,12 +136,15 @@ const transitioning = ref(false)
 const lightboxOpen  = ref(false)
 const lightboxIndex = ref(0)
 
-// Touch swipe handling for mobile
 const touchStartX = ref(0)
 const touchEndX = ref(0)
 const minSwipeDistance = 50
 
-const activeImage = computed(() => props.images[activeIndex.value] ?? null)
+const activeMedia = computed(() => props.images[activeIndex.value] ?? null)
+
+const imageItems = computed(() => props.images.filter(m => m.media_type === 'image'))
+const lightboxImage = computed(() => imageItems.value[lightboxIndex.value] ?? null)
+const lightboxImageIndex = computed(() => lightboxIndex.value)
 
 const setActive = (i: number) => {
   if (i === activeIndex.value) return
@@ -131,27 +156,27 @@ const setActive = (i: number) => {
 }
 
 const openLightbox = (i: number) => {
-  lightboxIndex.value = i
+  const imgIndex = imageItems.value.findIndex(m => m === props.images[i])
+  if (imgIndex === -1) return
+  lightboxIndex.value = imgIndex
   lightboxOpen.value  = true
 }
 
-const prevImage = () => {
-  lightboxIndex.value = (lightboxIndex.value - 1 + props.images.length) % props.images.length
+const prevLightboxImage = () => {
+  lightboxIndex.value = (lightboxIndex.value - 1 + imageItems.value.length) % imageItems.value.length
 }
 
-const nextImage = () => {
-  lightboxIndex.value = (lightboxIndex.value + 1) % props.images.length
+const nextLightboxImage = () => {
+  lightboxIndex.value = (lightboxIndex.value + 1) % imageItems.value.length
 }
 
-// Keyboard navigation in lightbox
 const handleKey = (e: KeyboardEvent) => {
   if (!lightboxOpen.value) return
-  if (e.key === 'ArrowLeft')  prevImage()
-  if (e.key === 'ArrowRight') nextImage()
+  if (e.key === 'ArrowLeft')  prevLightboxImage()
+  if (e.key === 'ArrowRight') nextLightboxImage()
   if (e.key === 'Escape')     lightboxOpen.value = false
 }
 
-// Touch swipe handlers
 const onTouchStart = (e: TouchEvent) => {
   touchStartX.value = e.changedTouches[0].screenX
 }
@@ -165,11 +190,9 @@ const handleSwipe = () => {
   const swipeDistance = touchEndX.value - touchStartX.value
   if (Math.abs(swipeDistance) > minSwipeDistance) {
     if (swipeDistance > 0) {
-      // Swiped right -> go to previous
-      prevImage()
+      prevLightboxImage()
     } else {
-      // Swiped left -> go to next
-      nextImage()
+      nextLightboxImage()
     }
   }
 }

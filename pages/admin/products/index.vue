@@ -54,16 +54,32 @@
             <!-- Product -->
             <td class="px-6 py-4">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-14 bg-bone-100 flex-shrink-0 overflow-hidden">
-                  <NuxtImg
-                    v-if="product.product_images?.[0]"
-                    :src="product.product_images[0].image_url"
-                    :alt="locTitle(product.title)"
-                    :width="80"
-                    :height="112"
-                    class="w-full h-full object-cover"
-                    loading="lazy"
-                  />
+                <div class="w-10 h-14 bg-bone-100 flex-shrink-0 overflow-hidden relative">
+                  <template v-if="product.product_images?.[0]">
+                    <img
+                      v-if="product.product_images[0].media_type !== 'video'"
+                      :src="product.product_images[0].image_url"
+                      :alt="locTitle(product.title)"
+                      class="w-full h-full object-cover"
+                    />
+                    <video
+                      v-else
+                      :src="product.product_images[0].image_url"
+                      class="w-full h-full object-cover"
+                      muted
+                      autoplay
+                      loop
+                      playsinline
+                    />
+                  </template>
+                  <span
+                    v-if="product.product_images?.[0]?.media_type === 'video'"
+                    class="absolute inset-0 flex items-center justify-center bg-black/20"
+                  >
+                    <svg class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </span>
                 </div>
                 <div>
                   <p class="font-sans text-sm font-light text-jet-900">{{ locTitle(product.title) }}</p>

@@ -1,6 +1,15 @@
 # Dependencies
 node_modules/
 
+# Markdown files (internal docs, not for repo)
+*.md
+
+# Claude Code internals
+.claude/
+
+# Agent tools
+.atl/
+
 # Nuxt build output
 .nuxt/
 .output/

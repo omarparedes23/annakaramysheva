@@ -2,11 +2,12 @@ import type { LocalizedString } from './collection'
 
 export type ProductStatus = 'draft' | 'published' | 'sold_out'
 
-export interface ProductImage {
+export interface ProductMedia {
   id: string
   product_id: string
   image_url: string
   position: number
+  media_type: 'image' | 'video'
 }
 
 export interface Product {
@@ -22,7 +23,7 @@ export interface Product {
 }
 
 export interface ProductWithImages extends Product {
-  product_images?: ProductImage[]
+  product_images?: ProductMedia[]
   collections?: import('./collection').Collection | null
 }
 

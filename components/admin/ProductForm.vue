@@ -118,7 +118,7 @@
 
         <!-- ─── Images ────────────────────────────────────────── -->
         <div class="bg-white border border-bone-200 p-6">
-          <h2 class="font-serif text-lg font-light text-jet-900 mb-6">Фотографии</h2>
+          <h2 class="font-serif text-lg font-light text-jet-900 mb-6">Медиа</h2>
 
           <!-- Upload zone -->
           <div
@@ -131,7 +131,7 @@
             <input
               ref="fileInputRef"
               type="file"
-              accept="image/jpeg,image/jpg,image/png,image/webp"
+              accept="image/jpeg,image/jpg,image/png,image/webp,video/mp4"
               multiple
               class="hidden"
               @change="handleFileSelect"
@@ -142,12 +142,12 @@
             </svg>
             <p class="font-sans text-xs text-jet-500 mb-1">
               <span v-if="uploadingImages" class="animate-pulse">Загрузка...</span>
-              <span v-else>Нажмите или перетащите фото</span>
+              <span v-else>Нажмите или перетащите медиа</span>
             </p>
-            <p class="label text-bone-400">JPEG, PNG, WebP — до 10MB</p>
+            <p class="label text-bone-400">JPEG, PNG, WebP, MP4 — до 100MB</p>
           </div>
 
-          <!-- Image previews -->
+          <!-- Media previews -->
           <div v-if="imageList.length" class="mt-4 grid grid-cols-4 sm:grid-cols-6 gap-3">
             <div
               v-for="(img, i) in imageList"
@@ -155,9 +155,19 @@
               class="relative group aspect-3/4 bg-bone-100 overflow-hidden"
             >
               <img
+                v-if="img.media_type !== 'video'"
                 :src="img.preview ?? img.image_url"
-                :alt="`Image ${i + 1}`"
+                :alt="`Media ${i + 1}`"
                 class="w-full h-full object-cover"
+              />
+              <video
+                v-else
+                :src="img.preview ?? img.image_url"
+                class="w-full h-full object-cover"
+                muted
+                autoplay
+                loop
+                playsinline
               />
 
               <!-- Position badge -->
@@ -264,6 +274,7 @@ interface LocalImage {
   preview?: string
   file?: File
   position: number
+  media_type: 'image' | 'video'
 }
 
 const props = defineProps<{
@@ -276,6 +287,7 @@ const emit = defineEmits<{
   saved: [id: string]
 }>()
 
+const { localize } = useCollections()
 const {
   createProduct,
   updateProduct,
@@ -303,8 +315,20 @@ const imageList = ref<LocalImage[]>(
     id: img.id,
     image_url: img.image_url,
     position: i,
+    media_type: img.media_type,
   }))
 )
+
+const currentCollectionSlug = computed(() => {
+  if (!form.collection_id) return 'uncategorized'
+  const col = props.collections.find(c => c.id === form.collection_id)
+  return col?.slug || 'uncategorized'
+})
+
+const currentProductSlug = computed(() => {
+  if (props.mode === 'edit' && props.product?.slug) return props.product.slug
+  return form.slug || 'item'
+})
 
 const saving        = ref(false)
 const savedSuccess  = ref(false)
@@ -349,12 +373,16 @@ const handleFileSelect = async (e: Event) => {
 }
 
 const handleDrop = async (e: DragEvent) => {
-  const files = Array.from(e.dataTransfer?.files ?? []).filter(f => f.type.startsWith('image/'))
+  const files = Array.from(e.dataTransfer?.files ?? [])
+    .filter(f => f.type.startsWith('image/') || f.type === 'video/mp4' || f.type === 'video/quicktime')
   await processFiles(files)
 }
 
 const processFiles = async (files: File[]) => {
   if (!files.length) return
+
+  const mediaType = (type: string): 'image' | 'video' =>
+    type.startsWith('video/') ? 'video' : 'image'
 
   // For create mode: store locally and upload on save
   if (props.mode === 'create') {
@@ -364,6 +392,7 @@ const processFiles = async (files: File[]) => {
         file,
         preview,
         position: imageList.value.length,
+        media_type: mediaType(file.type),
       })
     }
     return
@@ -374,12 +403,13 @@ const processFiles = async (files: File[]) => {
   uploadingImages.value = true
   try {
     for (const file of files) {
-      const url = await uploadImage(file, props.product.id)
-      const [saved] = await saveProductImages(props.product.id, [url], imageList.value.length)
+      const { url, mediaType: mt } = await uploadImage(file, currentCollectionSlug.value, currentProductSlug.value, imageList.value.length)
+      const [saved] = await saveProductImages(props.product.id, [{ url, mediaType: mt }], imageList.value.length)
       imageList.value.push({
         id: saved.id,
         image_url: saved.image_url,
         position: imageList.value.length,
+        media_type: saved.media_type as 'image' | 'video',
       })
     }
   }
@@ -435,12 +465,12 @@ const handleSave = async () => {
       // Upload pending images
       const pendingFiles = imageList.value.filter(img => img.file)
       if (pendingFiles.length) {
-        const urls: string[] = []
+        const items: { url: string; mediaType: 'image' | 'video' }[] = []
         for (const img of pendingFiles) {
-          const url = await uploadImage(img.file!, created.id)
-          urls.push(url)
+          const { url, mediaType } = await uploadImage(img.file!, currentCollectionSlug.value, form.slug || 'item', img.position)
+          items.push({ url, mediaType })
         }
-        await saveProductImages(created.id, urls, 0)
+        await saveProductImages(created.id, items, 0)
       }
 
       emit('saved', created.id)

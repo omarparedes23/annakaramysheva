@@ -1,4 +1,4 @@
-import type { Product, ProductInsert, ProductUpdate, ProductWithImages, ProductImage, InquiryInsert } from '~/types/product'
+import type { Product, ProductInsert, ProductUpdate, ProductWithImages, ProductMedia, InquiryInsert } from '~/types/product'
 
 export const useProducts = () => {
   const supabase = useSupabaseClient()
@@ -29,7 +29,7 @@ export const useProducts = () => {
       .select(`
         *,
         product_images:ak_product_images (
-          id, image_url, position
+          id, image_url, position, media_type
         ),
         collections:ak_collections (
           id, title, slug
@@ -42,7 +42,7 @@ export const useProducts = () => {
 
     return ((data ?? []) as ProductWithImages[]).map(p => ({
       ...p,
-      product_images: (p.product_images ?? []).sort((a: ProductImage, b: ProductImage) => a.position - b.position),
+      product_images: (p.product_images ?? []).sort((a: ProductMedia, b: ProductMedia) => a.position - b.position),
     }))
   }
 
@@ -54,7 +54,7 @@ export const useProducts = () => {
       .select(`
         *,
         product_images:ak_product_images (
-          id, image_url, position
+          id, image_url, position, media_type
         )
       `)
       .eq('collection_id', collectionId)
@@ -65,7 +65,7 @@ export const useProducts = () => {
 
     return ((data ?? []) as ProductWithImages[]).map(p => ({
       ...p,
-      product_images: (p.product_images ?? []).sort((a: ProductImage, b: ProductImage) => a.position - b.position),
+      product_images: (p.product_images ?? []).sort((a: ProductMedia, b: ProductMedia) => a.position - b.position),
     }))
   }
 
@@ -77,7 +77,7 @@ export const useProducts = () => {
       .select(`
         *,
         product_images:ak_product_images (
-          id, image_url, position
+          id, image_url, position, media_type
         ),
         collections:ak_collections (
           id, title, slug, year
@@ -94,7 +94,7 @@ export const useProducts = () => {
 
     const product = data as ProductWithImages
     product.product_images = (product.product_images ?? []).sort(
-      (a: ProductImage, b: ProductImage) => a.position - b.position
+      (a: ProductMedia, b: ProductMedia) => a.position - b.position
     )
     return product
   }
@@ -107,7 +107,7 @@ export const useProducts = () => {
       .select(`
         *,
         product_images:ak_product_images (
-          id, image_url, position
+          id, image_url, position, media_type
         ),
         collections:ak_collections (
           id, title, slug
@@ -119,7 +119,7 @@ export const useProducts = () => {
 
     return ((data ?? []) as ProductWithImages[]).map(p => ({
       ...p,
-      product_images: (p.product_images ?? []).sort((a: ProductImage, b: ProductImage) => a.position - b.position),
+      product_images: (p.product_images ?? []).sort((a: ProductMedia, b: ProductMedia) => a.position - b.position),
     }))
   }
 
@@ -131,7 +131,7 @@ export const useProducts = () => {
       .select(`
         *,
         product_images:ak_product_images (
-          id, image_url, position
+          id, image_url, position, media_type
         )
       `)
       .eq('id', id)
@@ -144,7 +144,7 @@ export const useProducts = () => {
 
     const product = data as ProductWithImages
     product.product_images = (product.product_images ?? []).sort(
-      (a: ProductImage, b: ProductImage) => a.position - b.position
+      (a: ProductMedia, b: ProductMedia) => a.position - b.position
     )
     return product
   }
@@ -189,37 +189,40 @@ export const useProducts = () => {
 
   // ─── Image upload ─────────────────────────────────────────
 
-  const uploadImage = async (file: File, productId: string): Promise<string> => {
-    const ext = file.name.split('.').pop()
-    const filename = `${productId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+  const uploadImage = async (
+    file: File,
+    collectionSlug: string,
+    productSlug: string,
+    position: number
+  ): Promise<{ url: string; mediaType: 'image' | 'video' }> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('collectionSlug', collectionSlug)
+    formData.append('productSlug', productSlug)
+    formData.append('position', String(position))
 
-    const { data, error } = await supabase.storage
-      .from('products')
-      .upload(filename, file, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: file.type,
-      })
+    const res = await fetch('/api/upload', { method: 'POST', body: formData })
 
-    if (error) throw new Error(error.message)
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.statusMessage || err.message || 'Upload failed')
+    }
 
-    const { data: urlData } = supabase.storage
-      .from('products')
-      .getPublicUrl(data.path)
-
-    return urlData.publicUrl
+    const data = await res.json()
+    return { url: data.url, mediaType: data.mediaType }
   }
 
   // ─── Save image records ───────────────────────────────────
 
   const saveProductImages = async (
     productId: string,
-    imageUrls: string[],
+    items: { url: string; mediaType: 'image' | 'video' }[],
     startPosition = 0
-  ): Promise<ProductImage[]> => {
-    const records = imageUrls.map((url, i) => ({
+  ): Promise<ProductMedia[]> => {
+    const records = items.map((item, i) => ({
       product_id: productId,
-      image_url: url,
+      image_url: item.url,
+      media_type: item.mediaType,
       position: startPosition + i,
     }))
 
@@ -229,10 +232,20 @@ export const useProducts = () => {
       .select()
 
     if (error) throw new Error(error.message)
-    return data as ProductImage[]
+    return data as ProductMedia[]
   }
 
   // ─── Delete image record + storage ───────────────────────
+
+  const extractPathFromUrl = (imageUrl: string): string | null => {
+    const r2Url = useRuntimeConfig().public.r2PublicUrl
+    if (!r2Url) return null
+    const prefix = r2Url + '/'
+    if (imageUrl.startsWith(prefix)) {
+      return imageUrl.slice(prefix.length)
+    }
+    return null
+  }
 
   const deleteProductImage = async (imageId: string, imageUrl: string): Promise<void> => {
     const { error: dbError } = await supabase
@@ -242,16 +255,24 @@ export const useProducts = () => {
 
     if (dbError) throw new Error(dbError.message)
 
-    // Extract path from public URL
-    const urlParts = imageUrl.split('/storage/v1/object/public/products/')
-    if (urlParts[1]) {
-      await supabase.storage.from('products').remove([urlParts[1]])
+    const path = extractPathFromUrl(imageUrl)
+    if (path) {
+      const res = await fetch('/api/upload', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path }),
+      })
+
+      if (!res.ok && res.status !== 404) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.statusMessage || err.message || 'Delete failed')
+      }
     }
   }
 
   // ─── Reorder images ───────────────────────────────────────
 
-  const reorderImages = async (images: ProductImage[]): Promise<void> => {
+  const reorderImages = async (images: ProductMedia[]): Promise<void> => {
     const updates = images.map((img, i) =>
       supabase.from('ak_product_images').update({ position: i }).eq('id', img.id)
     )
@@ -310,5 +331,6 @@ export const useProducts = () => {
     submitInquiry,
     generateSlug,
     generateFallbackSlug,
+    extractPathFromUrl,
   }
 }

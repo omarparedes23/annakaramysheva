@@ -42,16 +42,32 @@
           class="flex items-center gap-4 px-6 py-4 hover:bg-bone-50 transition-colors"
         >
           <!-- Thumbnail -->
-          <div class="w-12 h-16 bg-bone-100 flex-shrink-0 overflow-hidden">
-            <NuxtImg
-              v-if="product.product_images?.[0]"
-              :src="product.product_images[0].image_url"
-              :alt="localizeTitle(product.title)"
-              :width="96"
-              :height="128"
-              class="w-full h-full object-cover"
-              loading="lazy"
-            />
+          <div class="w-12 h-16 bg-bone-100 flex-shrink-0 overflow-hidden relative">
+            <template v-if="product.product_images?.[0]">
+              <img
+                v-if="product.product_images[0].media_type !== 'video'"
+                :src="product.product_images[0].image_url"
+                :alt="localizeTitle(product.title)"
+                class="w-full h-full object-cover"
+              />
+              <video
+                v-else
+                :src="product.product_images[0].image_url"
+                class="w-full h-full object-cover"
+                muted
+                autoplay
+                loop
+                playsinline
+              />
+            </template>
+            <span
+              v-if="product.product_images?.[0]?.media_type === 'video'"
+              class="absolute inset-0 flex items-center justify-center bg-black/20"
+            >
+              <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
           </div>
 
           <!-- Info -->

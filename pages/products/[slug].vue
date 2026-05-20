@@ -187,7 +187,7 @@ const productDetails = [
 ]
 
 // SEO
-const ogImage = product.value?.product_images?.[0]?.image_url
+const ogImage = product.value?.product_images?.find(m => m.media_type === 'image')?.image_url || product.value?.product_images?.[0]?.image_url
 useSeo({
   title: title.value,
   description: description.value ? description.value.slice(0, 160) : `${title.value} — luxury dress by Anna Karamysheva`,

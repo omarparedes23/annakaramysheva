@@ -33,12 +33,14 @@ CREATE TABLE IF NOT EXISTS ak_products (
   created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Product Images
+-- Product Images / Videos
 CREATE TABLE IF NOT EXISTS ak_product_images (
   id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   product_id UUID NOT NULL REFERENCES ak_products(id) ON DELETE CASCADE,
   image_url  TEXT NOT NULL,
-  position   INT NOT NULL DEFAULT 0
+  position   INT NOT NULL DEFAULT 0,
+  media_type TEXT NOT NULL DEFAULT 'image'
+               CHECK (media_type IN ('image', 'video'))
 );
 
 -- Inquiries

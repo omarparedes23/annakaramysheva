@@ -72,15 +72,28 @@ export default defineNuxtConfig({
           baseURL: process.env.SUPABASE_URL + '/storage/v1/object/public',
         },
       },
+      r2: {
+        name: 'r2',
+        provider: '~/providers/r2.ts',
+        options: {
+          baseURL: process.env.R2_PUBLIC_URL,
+        },
+      },
     },
     domains: [
       (process.env.SUPABASE_URL || '').replace('https://', ''),
+      (process.env.R2_PUBLIC_URL || '').replace('https://', ''),
     ],
   },
 
   // ─── Runtime Config ──────────────────────────────────────
   runtimeConfig: {
+    r2AccountId: process.env.R2_ACCOUNT_ID,
+    r2AccessKeyId: process.env.R2_ACCESS_KEY_ID,
+    r2SecretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    r2BucketName: process.env.R2_BUCKET_NAME || 'annakaramysheva',
     public: {
+      r2PublicUrl: process.env.R2_PUBLIC_URL || '',
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,
       siteUrl: process.env.SITE_URL || 'https://annakaramysheva.com',

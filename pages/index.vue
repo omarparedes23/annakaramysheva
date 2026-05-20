@@ -232,7 +232,7 @@ const quotes = computed(() => [
 useSeo({
   title: undefined,
   description: t('seo.home_description'),
-  image: heroProduct.value?.product_images?.[0]?.image_url,
+  image: heroProduct.value?.product_images?.find(m => m.media_type === 'image')?.image_url || heroProduct.value?.product_images?.[0]?.image_url,
   imageAlt: heroProductTitle.value ? `${heroProductTitle.value} by Anna Karamysheva` : undefined,
 })
 </script>
