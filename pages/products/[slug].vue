@@ -18,7 +18,30 @@
     </div>
 
     <!-- ─── Product Layout ────────────────────────────────── -->
-    <section class="container-editorial pb-24 md:pb-40">
+
+    <!-- Portfolio mode: centered single-column carousel -->
+    <section v-if="!showCommercialInfo" class="container-editorial pb-24 md:pb-40">
+      <div class="max-w-2xl mx-auto">
+        <ProductGallery
+          :images="product.product_images ?? []"
+          :alt="imageAlt"
+          :carousel="true"
+        />
+        <div v-if="collectionTitle" class="mt-6 text-center">
+          <NuxtLink
+            v-if="product.collections"
+            :to="localePath(`/collections/${(product.collections as any).slug}`)"
+            class="label text-bone-500 hover:text-jet-900 transition-colors"
+          >
+            {{ collectionTitle }}
+            <span v-if="(product.collections as any).year"> — {{ (product.collections as any).year }}</span>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- Commercial mode: 2-column grid with product details -->
+    <section v-else class="container-editorial pb-24 md:pb-40">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 xl:gap-28">
 
         <!-- Gallery -->
@@ -43,79 +66,77 @@
             </NuxtLink>
           </div>
 
-          <template v-if="showCommercialInfo">
-            <!-- Title -->
-            <h1 class="font-serif text-4xl md:text-5xl font-light text-jet-900 leading-tight mb-6">
-              {{ title }}
-            </h1>
+          <!-- Title -->
+          <h1 class="font-serif text-4xl md:text-5xl font-light text-jet-900 leading-tight mb-6">
+            {{ title }}
+          </h1>
 
-            <!-- Price -->
-            <p v-if="product.price" class="font-sans text-lg font-light text-jet-700 mb-8">
-              {{ formattedPrice }}
-            </p>
+          <!-- Price -->
+          <p v-if="product.price" class="font-sans text-lg font-light text-jet-700 mb-8">
+            {{ formattedPrice }}
+          </p>
 
-            <!-- Status -->
-            <div class="mb-8">
-              <span v-if="product.status === 'sold_out'" class="badge-sold-out">
-                {{ $t('product.sold_out') }}
-              </span>
-              <span v-else-if="product.status === 'published'" class="label text-jet-500">
-                {{ $t('product.available') }}
-              </span>
-            </div>
+          <!-- Status -->
+          <div class="mb-8">
+            <span v-if="product.status === 'sold_out'" class="badge-sold-out">
+              {{ $t('product.sold_out') }}
+            </span>
+            <span v-else-if="product.status === 'published'" class="label text-jet-500">
+              {{ $t('product.available') }}
+            </span>
+          </div>
 
-            <!-- Divider -->
-            <div class="divider mb-8" />
+          <!-- Divider -->
+          <div class="divider mb-8" />
 
-            <!-- Description -->
-            <div
-              v-if="description"
-              class="font-sans text-sm font-light text-jet-600 leading-relaxed mb-12 prose-editorial"
-              v-html="formattedDescription"
-            />
+          <!-- Description -->
+          <div
+            v-if="description"
+            class="font-sans text-sm font-light text-jet-600 leading-relaxed mb-12 prose-editorial"
+            v-html="formattedDescription"
+          />
 
-            <!-- CTA -->
-            <div class="space-y-4">
-              <a
-                v-if="product.external_link && product.status !== 'sold_out'"
-                :href="product.external_link"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="btn-primary w-full text-center block"
-              >
-                {{ $t('product.consult_availability') }}
-              </a>
+          <!-- CTA -->
+          <div class="space-y-4">
+            <a
+              v-if="product.external_link && product.status !== 'sold_out'"
+              :href="product.external_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-primary w-full text-center block"
+            >
+              {{ $t('product.consult_availability') }}
+            </a>
 
-              <NuxtLink
-                :to="localePath('/contact')"
-                class="btn-ghost w-full text-center block"
-              >
-                {{ $t('product.ask_question') }}
-              </NuxtLink>
-            </div>
+            <NuxtLink
+              :to="localePath('/contact')"
+              class="btn-ghost w-full text-center block"
+            >
+              {{ $t('product.ask_question') }}
+            </NuxtLink>
+          </div>
 
-            <!-- Details accordion -->
-            <div class="mt-16 space-y-0 divide-y divide-bone-200">
-              <details
-                v-for="detail in productDetails"
-                :key="detail.key"
-                class="group py-5"
-              >
-                <summary class="flex items-center justify-between cursor-pointer list-none">
-                  <span class="caption">{{ $t(detail.key) }}</span>
-                  <svg
-                    class="w-4 h-4 text-jet-400 transition-transform duration-200 group-open:rotate-45"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
-                  </svg>
-                </summary>
-                <p class="mt-4 font-sans text-sm font-light text-jet-500 leading-relaxed">
-                  {{ $t(detail.value) }}
-                </p>
-              </details>
-            </div>
-          </template>
+          <!-- Details accordion -->
+          <div class="mt-16 space-y-0 divide-y divide-bone-200">
+            <details
+              v-for="detail in productDetails"
+              :key="detail.key"
+              class="group py-5"
+            >
+              <summary class="flex items-center justify-between cursor-pointer list-none">
+                <span class="caption">{{ $t(detail.key) }}</span>
+                <svg
+                  class="w-4 h-4 text-jet-400 transition-transform duration-200 group-open:rotate-45"
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
+                </svg>
+              </summary>
+              <p class="mt-4 font-sans text-sm font-light text-jet-500 leading-relaxed">
+                {{ $t(detail.value) }}
+              </p>
+            </details>
+          </div>
         </div>
       </div>
     </section>
