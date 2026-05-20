@@ -47,6 +47,7 @@
           <div :key="product.slug" class="flex-1 aspect-3/4 bg-bone-100 overflow-hidden">
             <video
               v-if="coverMedia?.media_type === 'video'"
+              ref="videoEl"
               :src="coverMedia.image_url"
               class="w-full h-full object-cover"
               autoplay
@@ -322,6 +323,19 @@ const goToProduct = (slug: string) => {
     navigateTo(localePath(`/products/${slug}`))
   }
 }
+
+// Stop and unload video before ANY navigation to prevent
+// STATUS_ACCESS_VIOLATION (Chromium crashes when a playing <video>
+// is destroyed mid-decode during SPA route transitions)
+const videoEl = ref<HTMLVideoElement | null>(null)
+
+onBeforeRouteLeave(() => {
+  if (videoEl.value) {
+    videoEl.value.pause()
+    videoEl.value.src = ''
+    videoEl.value.load()
+  }
+})
 
 const productDetails = [
   { key: 'product.details_label', value: 'product.details_text' },
