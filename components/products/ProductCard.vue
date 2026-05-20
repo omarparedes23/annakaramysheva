@@ -5,12 +5,15 @@
         <template v-if="coverMedia">
           <video
             v-if="coverMedia.media_type === 'video'"
+            ref="videoRef"
             :src="coverMedia.image_url"
             class="w-full h-full object-cover"
-            autoplay
             muted
             loop
             playsinline
+            preload="metadata"
+            @play="isPlaying = true"
+            @pause="isPlaying = false"
           />
           <NuxtImg
             v-else
@@ -29,6 +32,21 @@
         >
           <span class="label text-bone-400">Anna Karamysheva</span>
         </div>
+
+        <!-- Play overlay for video covers -->
+        <button
+          v-if="coverMedia?.media_type === 'video'"
+          class="absolute inset-0 flex items-center justify-center transition-opacity duration-300"
+          :class="isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'"
+          aria-label="Play video"
+          @click.stop.prevent="togglePlay"
+        >
+          <div class="w-12 h-12 rounded-full bg-white/75 flex items-center justify-center backdrop-blur-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-jet-900 ml-0.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </div>
+        </button>
 
         <div v-if="showCommercialInfo && product.status === 'sold_out'" class="absolute bottom-4 left-4">
           <span class="badge-sold-out">{{ $t('product.sold_out') }}</span>
@@ -54,10 +72,9 @@
             v-if="coverMedia.media_type === 'video'"
             :src="coverMedia.image_url"
             class="w-full h-full object-cover"
-            autoplay
             muted
-            loop
             playsinline
+            preload="metadata"
           />
           <NuxtImg
             v-else
@@ -108,6 +125,19 @@ const localePath = useLocalePath()
 const { localize, formatPrice } = useProducts()
 const config = useRuntimeConfig()
 const showCommercialInfo = config.public.showCommercialInfo as boolean
+
+const videoRef = ref<HTMLVideoElement | null>(null)
+const isPlaying = ref(false)
+
+function togglePlay() {
+  const video = videoRef.value
+  if (!video) return
+  if (isPlaying.value) {
+    video.pause()
+  } else {
+    video.play()
+  }
+}
 
 const coverMedia = computed(() =>
   props.product.product_images?.find(m => m.media_type === 'video')

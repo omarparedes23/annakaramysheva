@@ -22,16 +22,33 @@
           />
           <video
             v-else
+            ref="videoRef"
             :src="activeMedia.image_url"
             class="w-full h-full object-cover"
-            controls
             playsinline
-            autoplay
             muted
             loop
+            preload="metadata"
+            @play="isPlaying = true"
+            @pause="isPlaying = false"
           />
         </template>
       </div>
+
+      <!-- Play overlay for video slides -->
+      <button
+        v-if="activeMedia?.media_type === 'video'"
+        class="absolute inset-0 flex items-center justify-center transition-opacity duration-300 z-10"
+        :class="isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'"
+        aria-label="Play video"
+        @click.stop="togglePlay"
+      >
+        <div class="w-14 h-14 rounded-full bg-white/75 flex items-center justify-center backdrop-blur-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-jet-900 ml-0.5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </div>
+      </button>
 
       <!-- Carousel arrows (outside overflow-hidden, inside relative wrapper) -->
       <template v-if="carousel && images.length > 1">
@@ -176,6 +193,17 @@ const activeIndex   = ref(0)
 const transitioning = ref(false)
 const lightboxOpen  = ref(false)
 const lightboxIndex = ref(0)
+
+const videoRef  = ref<HTMLVideoElement | null>(null)
+const isPlaying = ref(false)
+
+function togglePlay() {
+  const video = videoRef.value
+  if (!video) return
+  isPlaying.value ? video.pause() : video.play()
+}
+
+watch(activeIndex, () => { isPlaying.value = false })
 
 const minSwipeDistance = 50
 

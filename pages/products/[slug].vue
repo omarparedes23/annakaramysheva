@@ -44,16 +44,18 @@
           </div>
 
           <!-- Cover media: key on slug forces full DOM remount on navigation -->
-          <div :key="product.slug" class="flex-1 aspect-3/4 bg-bone-100 overflow-hidden">
+          <div :key="product.slug" class="flex-1 aspect-3/4 bg-bone-100 overflow-hidden relative">
             <video
               v-if="coverMedia?.media_type === 'video'"
               ref="videoEl"
               :src="coverMedia.image_url"
               class="w-full h-full object-cover"
-              autoplay
               muted
               loop
               playsinline
+              preload="metadata"
+              @play="isPlaying = true"
+              @pause="isPlaying = false"
             />
             <NuxtImg
               v-else-if="coverMedia"
@@ -65,6 +67,21 @@
               loading="eager"
               fit="cover"
             />
+
+            <!-- Play overlay for video cover -->
+            <button
+              v-if="coverMedia?.media_type === 'video'"
+              class="absolute inset-0 flex items-center justify-center transition-opacity duration-300"
+              :class="isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'"
+              aria-label="Play video"
+              @click.stop="toggleVideoPlay"
+            >
+              <div class="w-14 h-14 rounded-full bg-white/75 flex items-center justify-center backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-jet-900 ml-0.5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+            </button>
           </div>
 
           <!-- Right arrow slot -->
@@ -327,7 +344,14 @@ const goToProduct = (slug: string) => {
 // Stop and unload video before ANY navigation to prevent
 // STATUS_ACCESS_VIOLATION (Chromium crashes when a playing <video>
 // is destroyed mid-decode during SPA route transitions)
-const videoEl = ref<HTMLVideoElement | null>(null)
+const videoEl  = ref<HTMLVideoElement | null>(null)
+const isPlaying = ref(false)
+
+function toggleVideoPlay() {
+  const video = videoEl.value
+  if (!video) return
+  isPlaying.value ? video.pause() : video.play()
+}
 
 onBeforeRouteLeave(() => {
   if (videoEl.value) {
