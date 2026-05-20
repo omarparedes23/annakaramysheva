@@ -43,8 +43,8 @@
             </button>
           </div>
 
-          <!-- Cover media: image or video -->
-          <div class="flex-1 aspect-3/4 bg-bone-100 overflow-hidden">
+          <!-- Cover media: key on slug forces full DOM remount on navigation -->
+          <div :key="product.slug" class="flex-1 aspect-3/4 bg-bone-100 overflow-hidden">
             <video
               v-if="coverMedia?.media_type === 'video'"
               :src="coverMedia.image_url"
