@@ -19,14 +19,64 @@
 
     <!-- ─── Product Layout ────────────────────────────────── -->
 
-    <!-- Portfolio mode: centered single-column carousel -->
+    <!-- Portfolio mode: collection carousel (one photo per piece, navigates URLs) -->
     <section v-if="!showCommercialInfo" class="container-editorial pb-24 md:pb-40">
       <div class="max-w-2xl mx-auto">
-        <ProductGallery
-          :images="product.product_images ?? []"
-          :alt="imageAlt"
-          :carousel="true"
-        />
+        <!-- Image + arrows -->
+        <div
+          class="relative"
+          @touchstart="onSwipeStart"
+          @touchend="onSwipeEnd"
+        >
+          <div class="aspect-3/4 bg-bone-100 overflow-hidden">
+            <NuxtImg
+              v-if="coverImage"
+              :src="coverImage"
+              :alt="imageAlt"
+              :width="1200"
+              :height="1600"
+              class="w-full h-full object-cover"
+              loading="eager"
+              fit="cover"
+            />
+          </div>
+
+          <template v-if="collectionProducts.length > 1">
+            <button
+              v-if="prevProduct"
+              class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/75 hover:bg-white backdrop-blur-sm transition-all duration-200 z-10"
+              aria-label="Anterior"
+              @click="navigateTo(localePath(`/products/${prevProduct.slug}`))"
+            >
+              <svg class="w-4 h-4 text-jet-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              v-if="nextProduct"
+              class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/75 hover:bg-white backdrop-blur-sm transition-all duration-200 z-10"
+              aria-label="Siguiente"
+              @click="navigateTo(localePath(`/products/${nextProduct.slug}`))"
+            >
+              <svg class="w-4 h-4 text-jet-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </template>
+        </div>
+
+        <!-- Dots: one per piece in the collection -->
+        <div v-if="collectionProducts.length > 1" class="flex justify-center gap-2 mt-4">
+          <NuxtLink
+            v-for="p in collectionProducts"
+            :key="p.id"
+            :to="localePath(`/products/${p.slug}`)"
+            class="w-1.5 h-1.5 rounded-full transition-colors duration-200"
+            :class="p.id === product.id ? 'bg-jet-900' : 'bg-bone-400'"
+          />
+        </div>
+
+        <!-- Collection name -->
         <div v-if="collectionTitle" class="mt-6 text-center">
           <NuxtLink
             v-if="product.collections"
@@ -206,6 +256,48 @@ const relatedProducts = computed(() =>
     .filter(p => p.id !== product.value?.id && p.collection_id === product.value?.collection_id)
     .slice(0, 4)
 )
+
+// Collection carousel (portfolio mode)
+const collectionProducts = computed(() =>
+  (allProducts.value ?? []).filter(p => p.collection_id === product.value?.collection_id)
+)
+
+const currentIndex = computed(() =>
+  collectionProducts.value.findIndex(p => p.id === product.value?.id)
+)
+
+const prevProduct = computed(() =>
+  currentIndex.value > 0 ? collectionProducts.value[currentIndex.value - 1] : null
+)
+
+const nextProduct = computed(() =>
+  currentIndex.value < collectionProducts.value.length - 1
+    ? collectionProducts.value[currentIndex.value + 1]
+    : null
+)
+
+const coverImage = computed(() =>
+  product.value?.product_images?.find(m => m.media_type === 'image')?.image_url
+  || product.value?.product_images?.[0]?.image_url
+  || ''
+)
+
+// Swipe mobile
+const swipeTouchStartX = ref(0)
+const minSwipeDistance = 50
+
+const onSwipeStart = (e: TouchEvent) => {
+  swipeTouchStartX.value = e.changedTouches[0].screenX
+}
+const onSwipeEnd = (e: TouchEvent) => {
+  const diff = e.changedTouches[0].screenX - swipeTouchStartX.value
+  if (Math.abs(diff) < minSwipeDistance) return
+  if (diff > 0 && prevProduct.value) {
+    navigateTo(localePath(`/products/${prevProduct.value.slug}`))
+  } else if (diff < 0 && nextProduct.value) {
+    navigateTo(localePath(`/products/${nextProduct.value.slug}`))
+  }
+}
 
 const productDetails = [
   { key: 'product.details_label', value: 'product.details_text' },
