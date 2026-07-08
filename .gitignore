@@ -3,6 +3,7 @@ node_modules/
 
 # Markdown files (internal docs, not for repo)
 *.md
+!README.md
 
 # Claude Code internals
 .claude/

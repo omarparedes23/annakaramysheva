@@ -17,7 +17,6 @@
       <div class="flex items-center gap-3">
         <button
           v-if="mode === 'edit' && product"
-          :href="`/products/${product.slug}`"
           class="btn-ghost text-2xs py-2 px-4"
           @click="previewProduct"
         >

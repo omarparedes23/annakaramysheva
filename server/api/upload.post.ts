@@ -1,6 +1,12 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { serverSupabaseUser } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
+  const user = await serverSupabaseUser(event)
+  if (!user) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  }
+
   const config = useRuntimeConfig()
 
   const formData = await readMultipartFormData(event)
@@ -18,7 +24,7 @@ export default defineEventHandler(async (event) => {
   const position = formData.find(f => f.name === 'position')?.data?.toString() || '0'
 
   const file = fileField
-  const ext = file.filename.split('.').pop()?.toLowerCase() || 'jpg'
+  const ext = file.filename!.split('.').pop()?.toLowerCase() || 'jpg'
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif', 'video/mp4', 'video/quicktime']
 
   if (!file.type || !allowedTypes.includes(file.type)) {

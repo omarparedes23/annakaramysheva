@@ -175,6 +175,7 @@ definePageMeta({ layout: 'default' })
 
 const { t } = useI18n()
 const { submitInquiry } = useProducts()
+const localePath = useLocalePath()
 
 useSeo({
   title: t('contact.heading'),

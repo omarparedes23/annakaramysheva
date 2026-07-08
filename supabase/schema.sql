@@ -138,8 +138,19 @@ CREATE POLICY "Authenticated can delete products"
 -- POLICIES — Product Images
 -- ============================================================
 
-CREATE POLICY "Public can read product images"
+CREATE POLICY "Public can read published product images"
   ON ak_product_images FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM ak_products
+      WHERE ak_products.id = ak_product_images.product_id
+        AND (ak_products.status = 'published' OR ak_products.status = 'sold_out')
+    )
+  );
+
+CREATE POLICY "Authenticated can read all product images"
+  ON ak_product_images FOR SELECT
+  TO authenticated
   USING (true);
 
 CREATE POLICY "Authenticated can insert product images"

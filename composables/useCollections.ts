@@ -105,12 +105,8 @@ export const useCollections = () => {
   // ─── Generate slug from title ─────────────────────────────
 
   const generateSlug = (title: string): string => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9а-яё\s-]/gi, '')
-      .replace(/\s+/g, '-')
-      .replace(/--+/g, '-')
-      .replace(/^-|-$/g, '')
+    if (!title || !title.trim()) return ''
+    return slugify(title)
   }
 
   return {

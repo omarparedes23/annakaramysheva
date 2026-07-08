@@ -114,11 +114,11 @@
         <div v-if="collectionTitle" class="mt-6 text-center">
           <NuxtLink
             v-if="product.collections"
-            :to="localePath(`/collections/${(product.collections as any).slug}`)"
+            :to="localePath(`/collections/${product.collections.slug}`)"
             class="label text-bone-500 hover:text-jet-900 transition-colors"
           >
             {{ collectionTitle }}
-            <span v-if="(product.collections as any).year"> — {{ (product.collections as any).year }}</span>
+            <span v-if="product.collections.year"> — {{ product.collections.year }}</span>
           </NuxtLink>
         </div>
       </div>
@@ -142,11 +142,11 @@
           <div v-if="collectionTitle" class="mb-6">
             <NuxtLink
               v-if="product.collections"
-              :to="localePath(`/collections/${(product.collections as any).slug}`)"
+              :to="localePath(`/collections/${product.collections.slug}`)"
               class="label text-bone-500 hover:text-jet-900 transition-colors"
             >
               {{ collectionTitle }}
-              <span v-if="(product.collections as any).year"> — {{ (product.collections as any).year }}</span>
+              <span v-if="product.collections.year"> — {{ product.collections.year }}</span>
             </NuxtLink>
           </div>
 
@@ -273,7 +273,7 @@ if (!product.value) {
 const title           = computed(() => localize(product.value?.title))
 const description     = computed(() => localize(product.value?.description))
 const collectionTitle = computed(() => {
-  const col = product.value?.collections as any
+  const col = product.value?.collections
   if (!col) return ''
   return localize(col.title)
 })

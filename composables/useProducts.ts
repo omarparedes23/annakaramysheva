@@ -292,18 +292,8 @@ export const useProducts = () => {
   // ─── Generate slug ────────────────────────────────────────
 
   const generateSlug = (title: string): string => {
-    // If title is empty or only contains non-ASCII characters, return empty
     if (!title || !title.trim()) return ''
-    
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/--+/g, '-')
-      .replace(/^-|-$/g, '')
-    
-    // If slug is empty (e.g., title was all Cyrillic), return empty to trigger fallback
-    return slug
+    return slugify(title)
   }
   
   const generateFallbackSlug = (): string => {

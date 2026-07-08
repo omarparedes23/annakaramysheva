@@ -1,6 +1,12 @@
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { serverSupabaseUser } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
+  const user = await serverSupabaseUser(event)
+  if (!user) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  }
+
   const config = useRuntimeConfig()
   const body = await readBody(event)
 
